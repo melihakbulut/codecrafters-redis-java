@@ -13,12 +13,12 @@ public class Main {
         int port = 6379;
         try {
             serverSocket = new ServerSocket(port);
-            // Since the tester restarts your program quite often, setting SO_REUSEADDR
-            // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
-            // Wait for connection from client.
-            clientSocket = serverSocket.accept();
-            new Thread(new RedisHandler(clientSocket)).start();
+            while (true) {
+                // Wait for connection from client.
+                clientSocket = serverSocket.accept();
+                new Thread(new RedisHandler(clientSocket)).start();
+            }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
         } finally {
