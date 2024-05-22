@@ -15,6 +15,8 @@ public class RedisHandler implements Runnable {
             clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
             Thread.sleep(200);
             clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
+            Thread.sleep(200);
+            clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
