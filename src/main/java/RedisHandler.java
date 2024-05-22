@@ -13,7 +13,6 @@ public class RedisHandler implements Runnable {
     public void run() {
         try {
             clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
-            Thread.sleep(50);
             clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
         } catch (Exception e) {
             // TODO Auto-generated catch block
