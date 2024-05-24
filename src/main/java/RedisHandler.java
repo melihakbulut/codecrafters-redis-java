@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 public class RedisHandler implements Runnable {
 
@@ -60,8 +61,12 @@ public class RedisHandler implements Runnable {
 
             message = "+OK\r\n";
         } else if (commandWords[0].toLowerCase().equals("get")) {
-            String value = getFromMap(commandWords[1]);
-            message = String.format("$%s\r\n%s\r\n", value.length(), value);
+            try {
+                String value = getFromMap(commandWords[1]);
+                message = String.format("$%s\r\n%s\r\n", value.length(), value);
+            } catch (TimeoutException e) {
+                message = notFound;
+            }
         }
         clientSocket.getOutputStream().write(message.getBytes());
     }
@@ -78,12 +83,12 @@ public class RedisHandler implements Runnable {
         keyEntryTimeMap.put(key, expiryTime);
     }
 
-    private String getFromMap(String key) {
+    private String getFromMap(String key) throws TimeoutException {
         System.out.println(keyEntryTimeMap.get(key));
         System.out.println(System.currentTimeMillis());
         if (keyEntryTimeMap.get(key) != -1
             && System.currentTimeMillis() > keyEntryTimeMap.get(key)) {
-            return notFound;
+            throw new TimeoutException();
         }
         return keyValueMap.get(key);
     }
