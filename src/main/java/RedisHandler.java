@@ -117,6 +117,7 @@ public class RedisHandler implements Runnable {
         keyValueResponse.forEach((k, v) -> {
             String line = k + ":" + v;
             stringBuilder.append("$" + line.length() + "\r\n" + line + "\r\n");
+            System.out.println(stringBuilder.toString());
         });
         return stringBuilder.toString();
     }
