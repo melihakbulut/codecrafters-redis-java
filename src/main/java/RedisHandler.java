@@ -21,9 +21,9 @@ public class RedisHandler implements Runnable {
     public RedisHandler(Socket clientSocket, Configuration configuration) {
         this.clientSocket = clientSocket;
         this.configuration = configuration;
-        this.replication = new Replication();
-        if (Objects.nonNull(configuration.getReplicaOf()))
-            replication.getKeyValueMap().put("role", "slave");
+        String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
+        this.replication = new Replication(role);
+
     }
 
     @Override

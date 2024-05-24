@@ -10,8 +10,8 @@ public class Replication {
 
     private Map<String, Object> keyValueMap = new HashMap<String, Object>();
 
-    public Replication() {
-        keyValueMap.put("role", "master");
+    public Replication(String role) {
+        keyValueMap.put("role", role);
         //        keyValueMap.put("connected_slaves", 0);
         //        keyValueMap.put("master_replid", "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb");
         //        keyValueMap.put("master_repl_offset", 0);
