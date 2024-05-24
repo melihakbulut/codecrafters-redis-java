@@ -6,14 +6,14 @@ public class Main {
     public static void main(String[] args) {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
-        Integer port = null;
+        Integer port = 6379;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--port")) {
                 port = Integer.valueOf(args[i + 1]);
                 break;
             }
-
         }
+
         //  Uncomment this block to pass the first stage
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
