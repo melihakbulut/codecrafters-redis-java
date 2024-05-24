@@ -26,6 +26,7 @@ public class RedisHandler implements Runnable {
 
     public void listenSocket() throws IOException {
         while (true) {
+            //            System.out.print((byte) clientSocket.getInputStream().read() + ",");
             byte b = (byte) clientSocket.getInputStream().read();
             if (b == '*') {
                 int commandWordLength = Integer.valueOf(getStringValueOfByte((byte) clientSocket
@@ -60,9 +61,26 @@ public class RedisHandler implements Runnable {
 
     private String parseCommand() throws IOException {
         byte wordValue = (byte) clientSocket.getInputStream().read();
-        int wordLength = Integer
-                        .valueOf(getStringValueOfByte((byte) clientSocket.getInputStream().read()));
-        skipNewLine();
+        byte[] buf = new byte[1024];
+
+        int index = 0;
+        while (true) {
+            byte b = (byte) clientSocket.getInputStream().read();
+            buf[index] = b;
+            try {
+                if (buf[index - 1] == 13 && buf[index] == 10) {
+                    break;
+                }
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            index++;
+        }
+        index -= 1; //remove /r/n
+        byte[] shrinkedBuffer = new byte[index];
+        System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
+        //        skipNewLine();
+        int wordLength = Integer.valueOf(new String(shrinkedBuffer));
         String command = new String(clientSocket.getInputStream().readNBytes(wordLength));
         skipNewLine();
         return command;
