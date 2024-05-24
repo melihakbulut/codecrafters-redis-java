@@ -53,7 +53,11 @@ public class RedisHandler implements Runnable {
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
 
         } else if (commandWords[0].toLowerCase().equals("set")) {
-            putMap(commandWords[1], commandWords[2]);
+            if (commandWords.length > 3)
+                putMap(commandWords[1], commandWords[2], Long.parseLong(commandWords[4]));
+            else
+                putMap(commandWords[1], commandWords[2]);
+
             message = "+OK\r\n";
         } else if (commandWords[0].toLowerCase().equals("get")) {
             String value = getFromMap(commandWords[1]);
