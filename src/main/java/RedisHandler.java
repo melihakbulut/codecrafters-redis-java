@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 public class RedisHandler implements Runnable {
@@ -20,12 +21,13 @@ public class RedisHandler implements Runnable {
     public RedisHandler(Socket clientSocket, Configuration configuration) {
         this.clientSocket = clientSocket;
         this.configuration = configuration;
-        if (clientSocket.getLocalPort() == 6380) {
-            //            String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
-            this.replication = new Replication("slave");
-        } else
-            this.replication = new Replication("master");
-
+        //        if (clientSocket.getLocalPort() == 6380) {
+        //             String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
+        //            this.replication = new Replication("slave");
+        //        } else
+        //            this.replication = new Replication("master");
+        String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
+        this.replication = new Replication(role);
     }
 
     @Override
