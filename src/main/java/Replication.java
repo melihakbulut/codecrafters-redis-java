@@ -8,28 +8,18 @@ import lombok.Setter;
 @Setter
 public class Replication {
 
-    private Map<String, String> keyValueMap = new HashMap<String, String>();
+    private Map<String, Object> keyValueMap = new HashMap<String, Object>();
 
     public Replication() {
         keyValueMap.put("role", "master");
-        keyValueMap.put("connected_slaves", "");
-        keyValueMap.put("master_replid", "");
-        keyValueMap.put("master_repl_offset", "");
-        keyValueMap.put("second_repl_offset", "");
-        keyValueMap.put("repl_backlog_active", "");
-        keyValueMap.put("repl_backlog_size", "");
-        keyValueMap.put("repl_backlog_first_byte_offset", "");
+        keyValueMap.put("connected_slaves", 0);
+        keyValueMap.put("master_replid", "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb");
+        keyValueMap.put("master_repl_offset", 0);
+        keyValueMap.put("second_repl_offset", -1);
+        keyValueMap.put("repl_backlog_active", 0);
+        keyValueMap.put("repl_backlog_size", 1048576);
+        keyValueMap.put("repl_backlog_first_byte_offset", 0);
         keyValueMap.put("repl_backlog_histlen", "");
-
-        //        :master
-        //        :0
-        //        :8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb
-        //        :0
-        //        :-1
-        //        :0
-        //        :1048576
-        //        :0
-        //        :
     }
 
 }

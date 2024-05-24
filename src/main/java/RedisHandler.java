@@ -101,12 +101,12 @@ public class RedisHandler implements Runnable {
         clientSocket.getOutputStream().write(message.getBytes());
     }
 
-    private String convertToMessage(Map<String, String> keyValueResponse) throws IOException {
+    private String convertToMessage(Map<String, Object> keyValueResponse) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         keyValueResponse.forEach((k, v) -> {
             String line = k + ":" + v;
-            stringBuilder.append("$\r\n" + line.length() + "\r\n");
+            stringBuilder.append("$" + line.length() + "\r\n" + line + "\r\n");
         });
         return stringBuilder.toString();
     }
