@@ -45,7 +45,7 @@ public class RedisHandler implements Runnable {
         if (commandWords[0].toLowerCase().equals("ping")) {
             message = "+PONG\r\n";
         } else if (commandWords[0].toLowerCase().equals("echo")) {
-            message = String.format("$3\r\n%s\r\n", commandWords[1]);
+            message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
 
         }
         clientSocket.getOutputStream().write(message.getBytes());
