@@ -9,6 +9,9 @@ public class RedisHandler implements Runnable {
     private Socket clientSocket;
 
     private Map<String, String> keyValueMap = new HashMap<String, String>();
+    private Map<String, Long> keyEntryTimeMap = new HashMap<String, Long>();
+
+    private static final String notFound = "$-1\r\n";
 
     public RedisHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -50,13 +53,33 @@ public class RedisHandler implements Runnable {
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
 
         } else if (commandWords[0].toLowerCase().equals("set")) {
-            keyValueMap.put(commandWords[1], commandWords[2]);
+            putMap(commandWords[1], commandWords[2]);
             message = "+OK\r\n";
         } else if (commandWords[0].toLowerCase().equals("get")) {
-            String value = keyValueMap.get(commandWords[1]);
+            String value = getFromMap(commandWords[1]);
             message = String.format("$%s\r\n%s\r\n", value.length(), value);
         }
         clientSocket.getOutputStream().write(message.getBytes());
+    }
+
+    private void putMap(String key, String value) {
+        putMap(key, value, -1l);
+    }
+
+    private void putMap(String key, String value, Long timeoutMs) {
+        long expiryTime = -1;
+        if (timeoutMs > 0)
+            expiryTime = System.currentTimeMillis() + timeoutMs;
+        keyValueMap.put(key, value);
+        keyEntryTimeMap.put(key, expiryTime);
+    }
+
+    private String getFromMap(String key) {
+        if (keyEntryTimeMap.get(key) != -1
+            && System.currentTimeMillis() > keyEntryTimeMap.get(key)) {
+            return notFound;
+        }
+        return keyValueMap.get(key);
     }
 
     private String parseCommand() throws IOException {
@@ -79,7 +102,6 @@ public class RedisHandler implements Runnable {
         index -= 1; //remove /r/n
         byte[] shrinkedBuffer = new byte[index];
         System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
-        //        skipNewLine();
         int wordLength = Integer.valueOf(new String(shrinkedBuffer));
         String command = new String(clientSocket.getInputStream().readNBytes(wordLength));
         skipNewLine();
