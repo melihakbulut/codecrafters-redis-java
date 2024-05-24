@@ -1,13 +1,14 @@
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RedisHandler implements Runnable {
 
     private Socket clientSocket;
-    private Deque<String> commandQueue = new ArrayDeque<String>();
+
+    private Map<String, String> keyValueMap = new HashMap<String, String>();
 
     public RedisHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -47,6 +48,12 @@ public class RedisHandler implements Runnable {
         } else if (commandWords[0].toLowerCase().equals("echo")) {
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
 
+        } else if (commandWords[0].toLowerCase().equals("set")) {
+            keyValueMap.put(commandWords[1], commandWords[2]);
+            message = "+OK\r\n";
+        } else if (commandWords[0].toLowerCase().equals("get")) {
+            String value = keyValueMap.get(commandWords[1]);
+            message = String.format("$%s\r\n%s\r\n", value.length(), value);
         }
         clientSocket.getOutputStream().write(message.getBytes());
     }
