@@ -12,6 +12,8 @@ public class RedisHandler implements Runnable {
     private Map<String, String> keyValueMap = new HashMap<String, String>();
     private Map<String, Long> keyEntryTimeMap = new HashMap<String, Long>();
 
+    private Replication replication = new Replication();
+
     private static final String notFound = "$-1\r\n";
 
     public RedisHandler(Socket clientSocket) {
@@ -48,27 +50,39 @@ public class RedisHandler implements Runnable {
 
     private void handle(String[] commandWords) throws IOException {
         String message = null;
-        if (commandWords[0].toLowerCase().equals("ping")) {
+        if (checkCommand(commandWords, "ping")) {
             message = "+PONG\r\n";
-        } else if (commandWords[0].toLowerCase().equals("echo")) {
+        } else if (checkCommand(commandWords, "echo")) {
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
 
-        } else if (commandWords[0].toLowerCase().equals("set")) {
+        } else if (checkCommand(commandWords, "set")) {
             if (commandWords.length > 3)
                 putMap(commandWords[1], commandWords[2], Long.parseLong(commandWords[4]));
             else
                 putMap(commandWords[1], commandWords[2]);
 
             message = "+OK\r\n";
-        } else if (commandWords[0].toLowerCase().equals("get")) {
+        } else if (checkCommand(commandWords, "get")) {
             try {
                 String value = getFromMap(commandWords[1]);
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
             } catch (TimeoutException e) {
                 message = notFound;
             }
+        } else if (checkCommand(commandWords, "info")) {
+            if (checkCommand(commandWords, "replication", 1)) {
+                message = convertToMessage(replication.getKeyValueMap());
+            }
         }
-        clientSocket.getOutputStream().write(message.getBytes());
+        sendMessage(message);
+    }
+
+    private boolean checkCommand(String[] commandWords, String givenCommand) {
+        return checkCommand(commandWords, givenCommand, 0);
+    }
+
+    private boolean checkCommand(String[] commandWords, String givenCommand, int index) {
+        return commandWords[index].toLowerCase().equals(givenCommand.toLowerCase());
     }
 
     private void putMap(String key, String value) {
@@ -81,6 +95,20 @@ public class RedisHandler implements Runnable {
             expiryTime = System.currentTimeMillis() + timeoutMs;
         keyValueMap.put(key, value);
         keyEntryTimeMap.put(key, expiryTime);
+    }
+
+    private void sendMessage(String message) throws IOException {
+        clientSocket.getOutputStream().write(message.getBytes());
+    }
+
+    private String convertToMessage(Map<String, String> keyValueResponse) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        keyValueResponse.forEach((k, v) -> {
+            String line = k + ":" + v;
+            stringBuilder.append("$\r\n" + line.length() + "\r\n");
+        });
+        return stringBuilder.toString();
     }
 
     private String getFromMap(String key) throws TimeoutException {
