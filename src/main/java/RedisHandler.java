@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,6 +80,8 @@ public class RedisHandler implements Runnable {
     }
 
     private String getFromMap(String key) {
+        System.out.println(new Date(keyEntryTimeMap.get(key)));
+        System.out.println(new Date(System.currentTimeMillis()));
         if (keyEntryTimeMap.get(key) != -1
             && System.currentTimeMillis() > keyEntryTimeMap.get(key)) {
             return notFound;
