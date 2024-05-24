@@ -21,6 +21,7 @@ public class RedisHandler implements Runnable {
     public RedisHandler(Socket clientSocket, Configuration configuration) {
         this.clientSocket = clientSocket;
         this.configuration = configuration;
+        System.out.println(configuration);
         String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
         this.replication = new Replication(role);
 
