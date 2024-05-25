@@ -16,6 +16,7 @@ public class Main {
                 replicaOf = args[i + 1];
             }
         }
+        Data data = new Data();
         Configuration configuration = Configuration.builder().replicaOf(replicaOf).port(port)
                         .build();
 
@@ -31,7 +32,8 @@ public class Main {
             while (true) {
                 // Wait for connection from client.
                 clientSocket = serverSocket.accept();
-                new Thread(new RedisHandler(clientSocket, configuration, replication)).start();
+                new Thread(new RedisHandler(data, clientSocket, configuration, replication))
+                                .start();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());

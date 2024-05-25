@@ -3,7 +3,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
@@ -13,21 +12,22 @@ public class RedisHandler implements Runnable {
 
     private Socket clientSocket;
 
-    private Map<String, String> keyValueMap = new HashMap<String, String>();
-    private Map<String, Long> keyEntryTimeMap = new HashMap<String, Long>();
-
     private static final List<Socket> replications = new ArrayList<Socket>();
 
     private Replication replication;
     private Configuration configuration;
+    private Data data;
 
     private static final String notFound = "$-1\r\n";
 
-    public RedisHandler(Socket clientSocket, Configuration configuration, Replication replication) {
+    public RedisHandler(Data data,
+                        Socket clientSocket,
+                        Configuration configuration,
+                        Replication replication) {
         this.clientSocket = clientSocket;
         this.configuration = configuration;
         this.replication = replication;
-
+        this.data = data;
     }
 
     @Override
@@ -94,9 +94,9 @@ public class RedisHandler implements Runnable {
 
         } else if (checkCommand(commandWords, "set")) {
             if (commandWords.length > 3)
-                putMap(commandWords[1], commandWords[2], Long.parseLong(commandWords[4]));
+                data.putMap(commandWords[1], commandWords[2], Long.parseLong(commandWords[4]));
             else
-                putMap(commandWords[1], commandWords[2]);
+                data.putMap(commandWords[1], commandWords[2]);
 
             message = "+OK\r\n";
 
@@ -114,7 +114,7 @@ public class RedisHandler implements Runnable {
 
         } else if (checkCommand(commandWords, "get")) {
             try {
-                String value = getFromMap(commandWords[1]);
+                String value = data.getFromMap(commandWords[1]);
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
             } catch (TimeoutException e) {
                 message = notFound;
@@ -146,18 +146,6 @@ public class RedisHandler implements Runnable {
         return commandWords[index].toLowerCase().equals(givenCommand.toLowerCase());
     }
 
-    private void putMap(String key, String value) {
-        putMap(key, value, -1l);
-    }
-
-    private void putMap(String key, String value, Long timeoutMs) {
-        long expiryTime = -1;
-        if (timeoutMs > 0)
-            expiryTime = System.currentTimeMillis() + timeoutMs;
-        keyValueMap.put(key, value);
-        keyEntryTimeMap.put(key, expiryTime);
-    }
-
     private void sendMessage(String message) throws IOException {
         sendMessage(message.getBytes());
 
@@ -177,16 +165,6 @@ public class RedisHandler implements Runnable {
             stringBuilder.append(line + "\r\n");
         });
         return "$" + (stringBuilder.toString().length() - 4) + stringBuilder.toString();
-    }
-
-    private String getFromMap(String key) throws TimeoutException {
-        System.out.println(keyEntryTimeMap.get(key));
-        System.out.println(System.currentTimeMillis());
-        if (keyEntryTimeMap.get(key) != -1
-            && System.currentTimeMillis() > keyEntryTimeMap.get(key)) {
-            throw new TimeoutException();
-        }
-        return keyValueMap.get(key);
     }
 
     private String parseCommand() throws IOException {
