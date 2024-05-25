@@ -41,7 +41,7 @@ public class Replication {
             String ip = arr[0];
             Integer port = Integer.valueOf(arr[1]);
             Socket socket = new Socket(ip, port);
-            System.out.println(String.format("connectin master node %s:%s", ip, port));
+            System.out.println(String.format("connecting master node %s:%s", ip, port));
             String ping = "*1\r\n$4\r\nPING\r\n";
             sendMessage(socket, ping);
             handle("ping", waitForResponse(socket));
@@ -75,9 +75,9 @@ public class Replication {
     public String[] waitForResponse(Socket socket) throws IOException {
         String[] returnedMessage = null;
         while (true) {
-            //            System.out.print((byte) clientSocket.getInputStream().read() + ",");
+            //            System.out.print((byte) socket.getInputStream().read() + ",");
             byte b = (byte) socket.getInputStream().read();
-            if (b == '*') {
+            if (b == '+') {
                 int commandWordLength = Integer.valueOf(getStringValueOfByte((byte) socket
                                 .getInputStream().read()));
                 skipNewLine(socket);
