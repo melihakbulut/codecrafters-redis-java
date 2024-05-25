@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -85,7 +86,11 @@ public class RedisHandler implements Runnable {
             message = "+FULLRESYNC " + replication.getKeyValueMap().get("master_replid") + " "
                       + replication.getKeyValueMap().get("master_repl_offset") + "\r\n";
             String emptyHex = "524544495330303131fa0972656469732d76657205372e322e30fa0a72656469732d62697473c040fa056374696d65c26d08bc65fa08757365642d6d656dc2b0c41000fa08616f662d62617365c000fff06e3bfec0ff5aa2";
-            message += String.format("$%s\r\n%s", emptyHex.length(), emptyHex);
+            byte[] payload = HexFormat.of().parseHex(emptyHex);
+            message += String.format("$%s\r\n", payload.length);
+            sendMessage(message);
+            sendMessage(payload);
+            return;
         }
 
         sendMessage(message);
@@ -112,7 +117,12 @@ public class RedisHandler implements Runnable {
     }
 
     private void sendMessage(String message) throws IOException {
-        clientSocket.getOutputStream().write(message.getBytes());
+        sendMessage(message.getBytes());
+
+    }
+
+    private void sendMessage(byte[] arr) throws IOException {
+        clientSocket.getOutputStream().write(arr);
         clientSocket.getOutputStream().flush();
     }
 
