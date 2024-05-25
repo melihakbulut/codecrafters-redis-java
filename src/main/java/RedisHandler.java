@@ -1,8 +1,10 @@
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -12,6 +14,8 @@ public class RedisHandler implements Runnable {
 
     private Map<String, String> keyValueMap = new HashMap<String, String>();
     private Map<String, Long> keyEntryTimeMap = new HashMap<String, Long>();
+
+    private static final List<Socket> replications = new ArrayList<Socket>();
 
     private Replication replication;
     private Configuration configuration;
@@ -71,6 +75,10 @@ public class RedisHandler implements Runnable {
                 putMap(commandWords[1], commandWords[2]);
 
             message = "+OK\r\n";
+            for (Socket replica : replications) {
+                replica.getOutputStream().write(message.getBytes());
+            }
+
         } else if (checkCommand(commandWords, "get")) {
             try {
                 String value = getFromMap(commandWords[1]);
@@ -90,6 +98,7 @@ public class RedisHandler implements Runnable {
             message += String.format("$%s\r\n", payload.length);
             sendMessage(message);
             sendMessage(payload);
+            replications.add(clientSocket);
             return;
         }
 
