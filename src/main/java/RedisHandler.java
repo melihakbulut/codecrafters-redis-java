@@ -56,7 +56,8 @@ public class RedisHandler implements Runnable {
         String message = null;
         if (checkCommand(commandWords, "ping")) {
             message = "+PONG\r\n";
-        } else if (checkCommand(commandWords, "command")) {
+        } else if (checkCommand(commandWords, "command")
+                   || checkCommand(commandWords, "replconf")) {
             message = "+OK\r\n";
         } else if (checkCommand(commandWords, "echo")) {
 
