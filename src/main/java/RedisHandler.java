@@ -81,7 +81,11 @@ public class RedisHandler implements Runnable {
             if (checkCommand(commandWords, "replication", 1)) {
                 message = convertToMessage(replication.getKeyValueMap());
             }
+        } else if (checkCommand(commandWords, "psync")) {
+            message = "+FULLRESYNC" + replication.getKeyValueMap().get("master_replid") + " "
+                      + replication.getKeyValueMap().get("master_repl_offset") + "\r\n";
         }
+
         sendMessage(message);
     }
 
