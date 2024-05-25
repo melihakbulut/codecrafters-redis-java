@@ -62,7 +62,10 @@ public class RedisHandler implements Runnable {
         String message = null;
         if (checkCommand(commandWords, "ping")) {
             message = "+PONG\r\n";
+        } else if (checkCommand(commandWords, "command")) {
+            message = "+OK\r\n";
         } else if (checkCommand(commandWords, "echo")) {
+
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
 
         } else if (checkCommand(commandWords, "set")) {
@@ -109,17 +112,18 @@ public class RedisHandler implements Runnable {
 
     private void sendMessage(String message) throws IOException {
         clientSocket.getOutputStream().write(message.getBytes());
+        clientSocket.getOutputStream().flush();
     }
 
     private String convertToMessage(Map<String, Object> keyValueResponse) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append("\r\n");
         keyValueResponse.forEach((k, v) -> {
             String line = k + ":" + v;
-            stringBuilder.append("$" + line.length() + "\r\n" + line + "\r\n");
-            System.out.println(stringBuilder.toString());
+            stringBuilder.append(line + "\r\n");
         });
-        return stringBuilder.toString();
+        return "$" + (stringBuilder.toString().length() - 4) + stringBuilder.toString();
     }
 
     private String getFromMap(String key) throws TimeoutException {
