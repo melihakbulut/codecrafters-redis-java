@@ -84,8 +84,8 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "psync")) {
             message = "+FULLRESYNC " + replication.getKeyValueMap().get("master_replid") + " "
                       + replication.getKeyValueMap().get("master_repl_offset") + "\r\n";
-
-            message += "$1\r\n ";
+            String emptyHex = "UkVESVMwMDEx+glyZWRpcy12ZXIFNy4yLjD6CnJlZGlzLWJpdHPAQPoFY3RpbWXCbQi8ZfoIdXNlZC1tZW3CsMQQAPoIYW9mLWJhc2XAAP/wbjv+wP9aog==";
+            message += String.format("$%s\r\n%s", emptyHex.length(), emptyHex);
         }
 
         sendMessage(message);
