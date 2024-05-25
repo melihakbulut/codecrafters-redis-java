@@ -46,7 +46,8 @@ public class Replication {
             handle("ping", parseCommand(socket));
             String replConf = String
                             .format("*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$%s\r\n%d\r\n",
-                                    port.toString().length(), port);
+                                    configuration.getPort().toString().length(),
+                                    configuration.getPort());
             sendMessage(socket, replConf);
             handle("replconf", parseCommand(socket));
             String replConfSecond = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";

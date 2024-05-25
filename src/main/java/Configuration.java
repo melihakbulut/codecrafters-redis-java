@@ -8,4 +8,5 @@ import lombok.ToString;
 public class Configuration {
 
     private String replicaOf;
+    private Integer port;
 }

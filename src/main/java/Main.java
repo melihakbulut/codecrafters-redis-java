@@ -16,7 +16,8 @@ public class Main {
                 replicaOf = args[i + 1];
             }
         }
-        Configuration configuration = Configuration.builder().replicaOf(replicaOf).build();
+        Configuration configuration = Configuration.builder().replicaOf(replicaOf).port(port)
+                        .build();
 
         String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
         Replication replication = new Replication(configuration, role);
