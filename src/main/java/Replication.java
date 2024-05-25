@@ -41,9 +41,22 @@ public class Replication {
             Integer port = Integer.valueOf(arr[1]);
             Socket socket = new Socket(ip, port);
             System.out.println(String.format("connectin master node %s:%s", ip, port));
-            String message = "*1\r\n$4\r\nPING\r\n";
-            socket.getOutputStream().write(message.getBytes());
-
+            String ping = "*1\r\n$4\r\nPING\r\n";
+            socket.getOutputStream().write(ping.getBytes());
+            while (true) {
+                socket.getInputStream().readAllBytes();
+                break;
+            }
+            String replConf = String
+                            .format("*3\r\n$8\r\nREPLCONF\\r\n$14\r\nlistening-port\r\n$%s\r\n%s\r\n",
+                                    port.toString().length(), port);
+            socket.getOutputStream().write(replConf.getBytes());
+            while (true) {
+                socket.getInputStream().readAllBytes();
+                break;
+            }
+            String replConfSecond = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
+            socket.getOutputStream().write(replConfSecond.getBytes());
         }
     }
 
