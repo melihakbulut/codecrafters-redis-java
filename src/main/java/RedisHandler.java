@@ -65,7 +65,7 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "command")
                    || checkCommand(commandWords, "replconf")) {
             message = "+OK\r\n";
-            if (commandWords.length == 3) {
+            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
                 String host = ((InetSocketAddress) clientSocket.getRemoteSocketAddress())
                                 .getHostName();
                 Integer port = Integer.valueOf(commandWords[2]);
@@ -99,14 +99,17 @@ public class RedisHandler implements Runnable {
                 putMap(commandWords[1], commandWords[2]);
 
             message = "+OK\r\n";
-            String key = commandWords[1];
-            String value = commandWords[2];
-            String setFormat = "*3\r\n$3\r\nSET\r\n$%s\r\n%s\r\n$%s\r\n%s\r\n";
-            String replicaMessage = String.format(setFormat, key.length(), key, value.length(),
-                                                  value);
-            for (Socket replica : replications) {
-                System.out.println("sent to replica " + replicaMessage);
-                replica.getOutputStream().write(replicaMessage.getBytes());
+
+            if (replication.getKeyValueMap().get("role").equals("master")) {
+                String key = commandWords[1];
+                String value = commandWords[2];
+                String setFormat = "*3\r\n$3\r\nSET\r\n$%s\r\n%s\r\n$%s\r\n%s\r\n";
+                String replicaMessage = String.format(setFormat, key.length(), key, value.length(),
+                                                      value);
+                for (Socket replica : replications) {
+                    System.out.println("sent to replica " + replicaMessage);
+                    replica.getOutputStream().write(replicaMessage.getBytes());
+                }
             }
 
         } else if (checkCommand(commandWords, "get")) {
