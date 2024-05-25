@@ -69,7 +69,24 @@ public class RedisHandler implements Runnable {
                 String host = ((InetSocketAddress) clientSocket.getRemoteSocketAddress())
                                 .getHostName();
                 Integer port = Integer.valueOf(commandWords[2]);
-                replications.add(new Socket(host, port));
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(500);
+                            replications.add(new Socket(host, port));
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                    }
+                }).start();
+                ;
             }
         } else if (checkCommand(commandWords, "echo")) {
 
