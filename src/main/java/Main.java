@@ -12,10 +12,8 @@ public class Main {
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--port")) {
                 port = Integer.valueOf(args[i + 1]);
-                break;
             } else if (args[i].equals("--replicaof")) {
                 replicaOf = args[i + 1];
-                break;
             }
         }
         Configuration configuration = Configuration.builder().replicaOf(replicaOf).build();
