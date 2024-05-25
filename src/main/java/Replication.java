@@ -45,13 +45,14 @@ public class Replication {
             sendMessage(socket, ping);
             handle("ping", parseCommand(socket));
             String replConf = String
-                            .format("*3\r\n$8\r\nREPLCONF\\r\n$14\r\nlistening-port\r\n$%s\r\n%d\r\n",
+                            .format("*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$%s\r\n%d\r\n",
                                     port.toString().length(), port);
             sendMessage(socket, replConf);
             handle("replconf", parseCommand(socket));
             String replConfSecond = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
             sendMessage(socket, replConfSecond);
             handle("replconf2", parseCommand(socket));
+            socket.close();
         }
     }
 
