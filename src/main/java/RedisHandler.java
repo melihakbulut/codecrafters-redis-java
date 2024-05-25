@@ -75,8 +75,13 @@ public class RedisHandler implements Runnable {
                 putMap(commandWords[1], commandWords[2]);
 
             message = "+OK\r\n";
+            String key = commandWords[1];
+            String value = commandWords[2];
+            String setFormat = "*3\r\n$3\r\nSET\r\n$%s\r\n%s\r\n$%s\r\n%s\r\n";
+            String replicaMessage = String.format(setFormat, key.length(), key, value.length(),
+                                                  value);
             for (Socket replica : replications) {
-                replica.getOutputStream().write(message.getBytes());
+                replica.getOutputStream().write(replicaMessage.getBytes());
             }
 
         } else if (checkCommand(commandWords, "get")) {
