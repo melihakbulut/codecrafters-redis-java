@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +65,12 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "command")
                    || checkCommand(commandWords, "replconf")) {
             message = "+OK\r\n";
+            if (commandWords.length == 3) {
+                String host = ((InetSocketAddress) clientSocket.getRemoteSocketAddress())
+                                .getHostName();
+                Integer port = Integer.valueOf(commandWords[2]);
+                replications.add(new Socket(host, port));
+            }
         } else if (checkCommand(commandWords, "echo")) {
 
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
@@ -104,7 +111,7 @@ public class RedisHandler implements Runnable {
             message += String.format("$%s\r\n", payload.length);
             sendMessage(message);
             sendMessage(payload);
-            replications.add(clientSocket);
+            //            replications.add(clientSocket);
             return;
         }
 
