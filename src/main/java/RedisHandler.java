@@ -23,9 +23,9 @@ public class RedisHandler implements Runnable {
         this.configuration = configuration;
         if (clientSocket.getLocalPort() == 6380) {
             String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
-            this.replication = new Replication("slave");
+            this.replication = new Replication(configuration, "slave");
         } else
-            this.replication = new Replication("master");
+            this.replication = new Replication(configuration, "master");
         //        String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
         //        this.replication = new Replication(role);
     }
