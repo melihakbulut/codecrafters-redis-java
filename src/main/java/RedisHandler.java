@@ -81,6 +81,7 @@ public class RedisHandler implements Runnable {
             String replicaMessage = String.format(setFormat, key.length(), key, value.length(),
                                                   value);
             for (Socket replica : replications) {
+                System.out.println("sent to replica " + replicaMessage);
                 replica.getOutputStream().write(replicaMessage.getBytes());
             }
 
