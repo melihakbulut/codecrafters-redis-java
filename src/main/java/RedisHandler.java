@@ -85,7 +85,7 @@ public class RedisHandler implements Runnable {
             message = "+FULLRESYNC " + replication.getKeyValueMap().get("master_replid") + " "
                       + replication.getKeyValueMap().get("master_repl_offset") + "\r\n";
 
-            message += "$0\r\n";
+            message += "$1\r\n ";
         }
 
         sendMessage(message);
