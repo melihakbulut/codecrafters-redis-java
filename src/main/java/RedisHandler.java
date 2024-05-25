@@ -21,13 +21,13 @@ public class RedisHandler implements Runnable {
     public RedisHandler(Socket clientSocket, Configuration configuration) {
         this.clientSocket = clientSocket;
         this.configuration = configuration;
-        //        if (clientSocket.getLocalPort() == 6380) {
-        //             String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
-        //            this.replication = new Replication("slave");
-        //        } else
-        //            this.replication = new Replication("master");
-        String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
-        this.replication = new Replication(role);
+        if (clientSocket.getLocalPort() == 6380) {
+            String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
+            this.replication = new Replication("slave");
+        } else
+            this.replication = new Replication("master");
+        //        String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
+        //        this.replication = new Replication(role);
     }
 
     @Override
