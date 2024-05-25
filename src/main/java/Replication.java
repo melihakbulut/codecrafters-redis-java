@@ -15,6 +15,7 @@ public class Replication {
     private Map<String, Object> keyValueMap = new HashMap<String, Object>();
 
     public Replication(Configuration configuration, String role) {
+        this.configuration = configuration;
         keyValueMap.put("role", role);
         //        keyValueMap.put("connected_slaves", 0);
         keyValueMap.put("master_replid", "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb");

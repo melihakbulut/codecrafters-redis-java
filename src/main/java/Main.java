@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,6 +18,10 @@ public class Main {
                 break;
             }
         }
+        Configuration configuration = Configuration.builder().replicaOf(replicaOf).build();
+
+        String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
+        Replication replication = new Replication(configuration, role);
 
         //  Uncomment this block to pass the first stage
         ServerSocket serverSocket = null;
@@ -27,8 +32,7 @@ public class Main {
             while (true) {
                 // Wait for connection from client.
                 clientSocket = serverSocket.accept();
-                new Thread(new RedisHandler(clientSocket,
-                                Configuration.builder().replicaOf(replicaOf).build())).start();
+                new Thread(new RedisHandler(clientSocket, configuration, replication)).start();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
