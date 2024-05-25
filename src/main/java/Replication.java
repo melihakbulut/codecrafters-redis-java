@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,25 +43,25 @@ public class Replication {
             System.out.println(String.format("connecting master node %s:%s", ip, port));
             String ping = "*1\r\n$4\r\nPING\r\n";
             sendMessage(socket, ping);
-            handle("ping", waitForResponse(socket));
+            handle("ping", parseCommand(socket));
             String replConf = String
-                            .format("*3\r\n$8\r\nREPLCONF\\r\n$14\r\nlistening-port\r\n$%s\r\n%s\r\n",
+                            .format("*3\r\n$8\r\nREPLCONF\\r\n$14\r\nlistening-port\r\n$%s\r\n%d\r\n",
                                     port.toString().length(), port);
             sendMessage(socket, replConf);
-            handle("replconf", waitForResponse(socket));
+            handle("replconf", parseCommand(socket));
             String replConfSecond = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
             sendMessage(socket, replConfSecond);
-            handle("replconf2", waitForResponse(socket));
+            handle("replconf2", parseCommand(socket));
         }
     }
 
-    private void handle(String currentOperation, String[] commandWords) throws IOException {
-        System.out.println(Arrays.toString(commandWords));
-        if (currentOperation.equals("ping") && !commandWords[0].equals("PONG")) {
+    private void handle(String currentOperation, String command) throws IOException {
+
+        if (currentOperation.equals("ping") && !command.equals("PONG")) {
             throw new RuntimeException();
-        } else if (currentOperation.equals("replconf") && !commandWords[0].equals("OK")) {
+        } else if (currentOperation.equals("replconf") && !command.equals("OK")) {
             throw new RuntimeException();
-        } else if (currentOperation.equals("replconf2") && !commandWords[0].equals("OK")) {
+        } else if (currentOperation.equals("replconf2") && !command.equals("OK")) {
             throw new RuntimeException();
         }
     }
@@ -72,26 +71,30 @@ public class Replication {
         socket.getOutputStream().flush();
     }
 
-    public String[] waitForResponse(Socket socket) throws IOException {
-        String[] returnedMessage = null;
-        while (true) {
-            //            System.out.print((byte) socket.getInputStream().read() + ",");
-            byte b = (byte) socket.getInputStream().read();
-            if (b == '+') {
-                int commandWordLength = Integer.valueOf(getStringValueOfByte((byte) socket
-                                .getInputStream().read()));
-                skipNewLine(socket);
-                String[] commandWords = new String[commandWordLength];
-                for (int i = 0; i < commandWordLength; i++) {
-                    commandWords[i] = parseCommand(socket);
-                }
-                System.out.println(Arrays.toString(commandWords));
-                returnedMessage = commandWords;
-                break;
-            }
-        }
-        return returnedMessage;
-    }
+    //    public String[] waitForResponse(Socket socket) throws IOException {
+    //        String[] returnedMessage = null;
+    //        byte[] buf = new byte[1024];
+    //        int index = 0;
+    //        while (true) {
+    //            //            System.out.print((byte) socket.getInputStream().read() + ",");
+    //            byte b = (byte) socket.getInputStream().read();
+    //            buf[index] = b;
+    //            int commandWordLength = Integer
+    //                            .valueOf(getStringValueOfByte((byte) socket.getInputStream().read()));
+    //            skipNewLine(socket);
+    //            String[] commandWords = new String[commandWordLength];
+    //            for (int i = 0; i < commandWordLength; i++) {
+    //                commandWords[i] = parseCommand(socket);
+    //            }
+    //            System.out.println(Arrays.toString(commandWords));
+    //            returnedMessage = commandWords;
+    //            if (buf[index - 1] == 13 && buf[index] == 10) {
+    //                break;
+    //            }
+    //
+    //        }
+    //        return returnedMessage;
+    //    }
 
     private void skipNewLine(Socket socket) throws IOException {
         socket.getInputStream().readNBytes(2);
@@ -121,9 +124,7 @@ public class Replication {
         index -= 1; //remove /r/n
         byte[] shrinkedBuffer = new byte[index];
         System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
-        int wordLength = Integer.valueOf(new String(shrinkedBuffer));
-        String command = new String(socket.getInputStream().readNBytes(wordLength));
-        skipNewLine(socket);
+        String command = new String(shrinkedBuffer);
         return command;
     }
 }
