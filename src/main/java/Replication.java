@@ -53,6 +53,9 @@ public class Replication {
             String replConfSecond = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
             sendMessage(socket, replConfSecond);
             handle("replconf2", parseCommand(socket));
+            String psync = "*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n";
+            sendMessage(socket, psync);
+            handle("psync", parseCommand(socket));
             socket.close();
         }
     }
@@ -64,6 +67,8 @@ public class Replication {
         } else if (currentOperation.equals("replconf") && !command.equals("OK")) {
             throw new RuntimeException();
         } else if (currentOperation.equals("replconf2") && !command.equals("OK")) {
+            throw new RuntimeException();
+        } else if (currentOperation.equals("psync") && !command.startsWith("FULLRESYNC")) {
             throw new RuntimeException();
         }
     }
