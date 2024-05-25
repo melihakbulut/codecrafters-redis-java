@@ -39,8 +39,10 @@ public class Replication {
             String ip = arr[0];
             Integer port = Integer.valueOf(arr[1]);
             Socket socket = new Socket(ip, port);
+            System.out.println(String.format("connectin master node %s:%s", ip, port));
             String message = "*1\r\n$4\r\nPING\r\n";
             socket.getOutputStream().write(message.getBytes());
+
         }
     }
 
