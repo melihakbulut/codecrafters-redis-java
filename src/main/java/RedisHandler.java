@@ -19,18 +19,14 @@ public class RedisHandler implements Runnable {
 
     private Replication replication;
     private Configuration configuration;
-    private Data data;
+    private static final Data data = new Data();
 
     public static final String notFound = "$-1\r\n";
 
-    public RedisHandler(Data data,
-                        Socket clientSocket,
-                        Configuration configuration,
-                        Replication replication) {
+    public RedisHandler(Socket clientSocket, Configuration configuration, Replication replication) {
         this.clientSocket = clientSocket;
         this.configuration = configuration;
         this.replication = replication;
-        this.data = data;
     }
 
     @Override

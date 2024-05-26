@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.util.Objects;
 
 public class Main {
+
     public static void main(String[] args) {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
@@ -16,7 +17,6 @@ public class Main {
                 replicaOf = args[i + 1];
             }
         }
-        Data data = new Data();
         Configuration configuration = Configuration.builder().replicaOf(replicaOf).port(port)
                         .build();
 
@@ -32,8 +32,7 @@ public class Main {
             while (true) {
                 // Wait for connection from client.
                 clientSocket = serverSocket.accept();
-                new Thread(new RedisHandler(data, clientSocket, configuration, replication))
-                                .start();
+                new Thread(new RedisHandler(clientSocket, configuration, replication)).start();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
