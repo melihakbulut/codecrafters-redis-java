@@ -1,22 +1,20 @@
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeoutException;
 
 public class RedisHandler implements Runnable {
 
     private Socket clientSocket;
 
-    private static final Queue<String> replicationConnectQueue = new ArrayBlockingQueue<String>(10);
-    private static final List<Socket> replications = new ArrayList<Socket>();
+    //    private static final Queue<String> replicationConnectQueue = new ArrayBlockingQueue<String>(10);
+    //    private static final List<Socket> replications = new ArrayList<Socket>();
 
+    private static final List<Socket> replications = new ArrayList<Socket>();
     private Replication replication;
     private Configuration configuration;
     private static final Data data = new Data();
@@ -64,12 +62,12 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "command")
                    || checkCommand(commandWords, "replconf")) {
             message = "+OK\r\n";
-            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
-                String host = ((InetSocketAddress) clientSocket.getRemoteSocketAddress())
-                                .getHostName();
-                String port = commandWords[2];
-                replicationConnectQueue.add(host + ":" + port);
-            }
+            //            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
+            //                String host = ((InetSocketAddress) clientSocket.getRemoteSocketAddress())
+            //                                .getHostName();
+            //                String port = commandWords[2];
+            //                replicationConnectQueue.add(host + ":" + port);
+            //            }
         } else if (checkCommand(commandWords, "echo")) {
 
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
@@ -83,11 +81,11 @@ public class RedisHandler implements Runnable {
             message = "+OK\r\n";
 
             if (replication.getKeyValueMap().get("role").equals("master")) {
-                while (!replicationConnectQueue.isEmpty()) {
-                    String replicationConfigItem = replicationConnectQueue.poll();
-                    String[] arr = replicationConfigItem.split(":");
-                    replications.add(new Socket(arr[0], Integer.valueOf(arr[1])));
-                }
+                //                while (!replicationConnectQueue.isEmpty()) {
+                //                    String replicationConfigItem = replicationConnectQueue.poll();
+                //                    String[] arr = replicationConfigItem.split(":");
+                //                    replications.add(new Socket(arr[0], Integer.valueOf(arr[1])));
+                //                }
 
                 String key = commandWords[1];
                 String value = commandWords[2];
@@ -121,6 +119,7 @@ public class RedisHandler implements Runnable {
 
             sendMessage(message);
             sendMessage(payload);
+            replications.add(clientSocket);
             return;
         }
 
