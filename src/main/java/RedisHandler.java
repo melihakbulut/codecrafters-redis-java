@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 public class RedisHandler implements Runnable {
 
@@ -109,7 +108,7 @@ public class RedisHandler implements Runnable {
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
                 //                else
                 //                    message = notFound;
-            } catch (TimeoutException e) {
+            } catch (Exception e) {
                 message = notFound;
             }
         } else if (checkCommand(commandWords, "info")) {

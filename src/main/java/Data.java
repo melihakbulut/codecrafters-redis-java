@@ -22,7 +22,7 @@ public class Data {
         putMap(key, value, -1l);
     }
 
-    public String getFromMap(String key) throws TimeoutException {
+    public String getFromMap(String key) throws Exception {
 
         System.out.println(keyEntryTimeMap.get(key));
         System.out.println(System.currentTimeMillis());
