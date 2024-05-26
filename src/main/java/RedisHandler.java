@@ -74,7 +74,7 @@ public class RedisHandler implements Runnable {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(10);
                             replications.add(new Socket(host, port));
                         } catch (IOException e) {
                             // TODO Auto-generated catch block
