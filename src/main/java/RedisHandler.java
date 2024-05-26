@@ -126,7 +126,12 @@ public class RedisHandler implements Runnable {
             sendMessage(message);
             sendMessage(payload);
             replications.add(clientSocket);
-
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             sendMessage("*3\r\n$8\r\nreplconf\r\n$6\r\ngetack\r\n$1\r\n*\r\n");
             return;
         }
