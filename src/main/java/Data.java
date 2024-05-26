@@ -23,12 +23,6 @@ public class Data {
     }
 
     public String getFromMap(String key) throws TimeoutException {
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         System.out.println(keyEntryTimeMap.get(key));
         System.out.println(System.currentTimeMillis());
         if (keyEntryTimeMap.get(key) != -1
