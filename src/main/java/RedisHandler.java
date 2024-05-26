@@ -127,7 +127,7 @@ public class RedisHandler implements Runnable {
             sendMessage(payload);
             replications.add(clientSocket);
 
-            sendMessage("REPLCONF GETACK *");
+            sendMessage("*3\r\n$8\r\nreplconf\r\n$6\r\ngetack\r\n$1\r\n*\r\n");
             return;
         }
 
