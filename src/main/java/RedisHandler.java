@@ -61,7 +61,10 @@ public class RedisHandler implements Runnable {
             message = "+PONG\r\n";
         } else if (checkCommand(commandWords, "command")
                    || checkCommand(commandWords, "replconf")) {
-            message = "+OK\r\n";
+            if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "getack", 1)) {
+                message = "*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n";
+            } else
+                message = "+OK\r\n";
             //            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
             //                String host = ((InetSocketAddress) clientSocket.getRemoteSocketAddress())
             //                                .getHostName();
@@ -123,6 +126,8 @@ public class RedisHandler implements Runnable {
             sendMessage(message);
             sendMessage(payload);
             replications.add(clientSocket);
+
+            sendMessage("REPLCONF GETACK *");
             return;
         }
 
