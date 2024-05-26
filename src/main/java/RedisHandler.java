@@ -102,7 +102,10 @@ public class RedisHandler implements Runnable {
             try {
 
                 String value = data.getFromMap(commandWords[1]);
+                //                if (!value.isEmpty())
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
+                //                else
+                //                    message = notFound;
             } catch (TimeoutException e) {
                 message = notFound;
             }
