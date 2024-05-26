@@ -21,7 +21,7 @@ public class RedisHandler implements Runnable {
     private Configuration configuration;
     private Data data;
 
-    private static final String notFound = "$-1\r\n";
+    public static final String notFound = "$-1\r\n";
 
     public RedisHandler(Data data,
                         Socket clientSocket,

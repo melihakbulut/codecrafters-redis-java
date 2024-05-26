@@ -23,12 +23,17 @@ public class Data {
     }
 
     public String getFromMap(String key) throws TimeoutException {
-        System.out.println(keyEntryTimeMap.get(key));
-        System.out.println(System.currentTimeMillis());
-        if (keyEntryTimeMap.get(key) != -1
-            && System.currentTimeMillis() > keyEntryTimeMap.get(key)) {
-            throw new TimeoutException();
+        try {
+
+            System.out.println(keyEntryTimeMap.get(key));
+            System.out.println(System.currentTimeMillis());
+            if (keyEntryTimeMap.get(key) != -1
+                && System.currentTimeMillis() > keyEntryTimeMap.get(key)) {
+                throw new TimeoutException();
+            }
+            return keyValueMap.get(key);
+        } catch (Exception e) {
+            return RedisHandler.notFound;
         }
-        return keyValueMap.get(key);
     }
 }
