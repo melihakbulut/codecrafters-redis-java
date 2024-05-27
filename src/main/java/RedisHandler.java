@@ -170,7 +170,8 @@ public class RedisHandler implements Runnable {
                 previousAckedOffset = currentAckedOffset;
             } else {
                 message = String.format(":%s\r\n", replications.size());
-
+                sendMessage(message);
+                return;
             }
         }
 
