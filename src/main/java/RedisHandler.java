@@ -70,9 +70,9 @@ public class RedisHandler implements Runnable {
                 }
 
                 offsetValue = String.valueOf(offset.get());
-
                 message = String.format("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$%s\r\n%s\r\n",
                                         offsetValue.length(), offsetValue);
+                sendMessage(message);
 
             } else
                 message = "+OK\r\n";
@@ -137,18 +137,11 @@ public class RedisHandler implements Runnable {
             sendMessage(message);
             sendMessage(payload);
             replications.add(clientSocket);
-            //            try {
-            //                Thread.sleep(50);
-            //            } catch (InterruptedException e) {
-            //                // TODO Auto-generated catch block
-            //                e.printStackTrace();
-            //            }
-            //            sendMessage("*3\r\n$8\r\nreplconf\r\n$6\r\ngetack\r\n$1\r\n*\r\n");
             return;
         }
-        if (handshakeDone)
-            return;
-        sendMessage(message);
+
+        if (!handshakeDone)
+            sendMessage(message);
     }
 
     private boolean checkCommand(String[] commandWords, String givenCommand) {
