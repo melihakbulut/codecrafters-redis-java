@@ -168,6 +168,8 @@ public class RedisHandler implements Runnable {
                 message = String.format(":%s\r\n", ackCount.get());
                 ackCount.set(0);
                 previousAckedOffset = currentAckedOffset;
+                sendMessage(message);
+                return;
             } else {
                 message = String.format(":%s\r\n", replications.size());
                 sendMessage(message);
