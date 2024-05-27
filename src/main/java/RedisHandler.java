@@ -67,15 +67,16 @@ public class RedisHandler implements Runnable {
                    || checkCommand(commandWords, "replconf")) {
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "getack", 1)) {
                 String offsetValue = null;
-                if (!handshakeDone)
+                if (!handshakeDone) {
                     offset.set(0);
+                    handshakeDone = true;
+                }
 
                 offsetValue = String.valueOf(offset.get());
 
                 message = String.format("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$%s\r\n%s\r\n",
                                         offsetValue.length(), offsetValue);
 
-                handshakeDone = true;
             } else
                 message = "+OK\r\n";
             //            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
