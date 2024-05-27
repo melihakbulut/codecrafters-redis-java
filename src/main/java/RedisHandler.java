@@ -224,7 +224,7 @@ public class RedisHandler implements Runnable {
 
     private byte[] readNBytesFromSocket(int n) throws IOException {
         byte[] arr = clientSocket.getInputStream().readNBytes(n);
-        offset.incrementAndGet();
+        offset.set(offset.get() + n);
         return arr;
     }
 }
