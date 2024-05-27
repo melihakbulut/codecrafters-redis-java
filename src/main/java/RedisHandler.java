@@ -159,6 +159,7 @@ public class RedisHandler implements Runnable {
             //            String length = String.valueOf(replications.size());
             //            message = String.format(":%s\r\n", length);
             message = String.format(":%s\r\n", ackCount.get());
+            ackCount.set(0);
         }
 
         if (!handshakeDone)
