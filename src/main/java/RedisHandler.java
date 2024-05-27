@@ -139,7 +139,8 @@ public class RedisHandler implements Runnable {
             replications.add(clientSocket);
             return;
         } else if (checkCommand(commandWords, "wait")) {
-            message = ":0\r\n";
+            String length = String.valueOf(replications.size());
+            message = String.format(":%s\r\n", length);
         }
 
         if (!handshakeDone)
