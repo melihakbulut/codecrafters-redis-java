@@ -139,9 +139,10 @@ public class RedisHandler implements Runnable {
             replications.add(clientSocket);
             return;
         } else if (checkCommand(commandWords, "wait")) {
-            replications.get(0).getOutputStream()
-                            .write("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n"
-                                            .getBytes());
+            for (Socket socket : replications) {
+                socket.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n"
+                                .getBytes());
+            }
             String length = String.valueOf(replications.size());
             message = String.format(":%s\r\n", length);
         }
