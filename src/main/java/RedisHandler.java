@@ -22,7 +22,8 @@ public class RedisHandler implements Runnable {
     public static final String notFound = "$-1\r\n";
 
     private AtomicInteger offset = new AtomicInteger(0);
-    private static Integer lastOffset = 0;
+    private static Integer previousAckedOffset = 0;
+    private static Integer currentAckedOffset = 0;
     private boolean handshakeDone = false;
 
     private static AtomicInteger ackCount = new AtomicInteger(0);
@@ -80,7 +81,7 @@ public class RedisHandler implements Runnable {
             }
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "ack", 1)) {
                 ackCount.incrementAndGet();
-                lastOffset = Integer.valueOf(commandWords[2]);
+                currentAckedOffset = Integer.parseInt(commandWords[2]);
                 return;
             } else
                 message = "+OK\r\n";
@@ -145,10 +146,11 @@ public class RedisHandler implements Runnable {
             sendMessage(message);
             sendMessage(payload);
             replications.add(clientSocket);
+            offset.set(0);
             return;
         } else if (checkCommand(commandWords, "wait")) {
 
-            if (offset.get() > lastOffset) {
+            if (previousAckedOffset < currentAckedOffset) {
                 for (Socket socket : replications) {
                     socket.getOutputStream()
                                     .write("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n"
@@ -165,6 +167,7 @@ public class RedisHandler implements Runnable {
                 //            message = String.format(":%s\r\n", length);
                 message = String.format(":%s\r\n", ackCount.get());
                 ackCount.set(0);
+                previousAckedOffset = currentAckedOffset;
             } else {
                 message = String.format(":%s\r\n", replications.size());
 
