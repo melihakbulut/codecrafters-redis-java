@@ -22,6 +22,7 @@ public class RedisHandler implements Runnable {
     public static final String notFound = "$-1\r\n";
 
     private AtomicInteger offset = new AtomicInteger(0);
+    private static Integer lastOffset = 0;
     private boolean handshakeDone = false;
 
     private static AtomicInteger ackCount = new AtomicInteger(0);
@@ -79,6 +80,7 @@ public class RedisHandler implements Runnable {
             }
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "ack", 1)) {
                 ackCount.incrementAndGet();
+                lastOffset = Integer.valueOf(commandWords[2]);
                 return;
             } else
                 message = "+OK\r\n";
@@ -146,7 +148,7 @@ public class RedisHandler implements Runnable {
             return;
         } else if (checkCommand(commandWords, "wait")) {
 
-            if (offset.get() > 0) {
+            if (offset.get() > lastOffset) {
                 for (Socket socket : replications) {
                     socket.getOutputStream()
                                     .write("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n"
