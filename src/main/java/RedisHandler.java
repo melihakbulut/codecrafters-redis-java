@@ -24,7 +24,7 @@ public class RedisHandler implements Runnable {
     private AtomicInteger offset = new AtomicInteger(0);
     private boolean handshakeDone = false;
 
-    private AtomicInteger ackCount = new AtomicInteger(0);
+    private static AtomicInteger ackCount = new AtomicInteger(0);
 
     public RedisHandler(Socket clientSocket, Configuration configuration, Replication replication) {
         this.clientSocket = clientSocket;
@@ -78,9 +78,8 @@ public class RedisHandler implements Runnable {
 
             }
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "ack", 1)) {
-                System.out.println("ack came");
                 ackCount.incrementAndGet();
-                System.out.println(ackCount.get());
+                return;
             } else
                 message = "+OK\r\n";
             //            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
