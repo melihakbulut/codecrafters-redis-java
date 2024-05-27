@@ -59,8 +59,6 @@ public class RedisHandler implements Runnable {
     private void handle(String[] commandWords) throws IOException {
         String message = null;
         if (checkCommand(commandWords, "ping")) {
-            if (handshakeDone)
-                return;
             message = "+PONG\r\n";
         } else if (checkCommand(commandWords, "command")
                    || checkCommand(commandWords, "replconf")) {
@@ -148,7 +146,8 @@ public class RedisHandler implements Runnable {
             //            sendMessage("*3\r\n$8\r\nreplconf\r\n$6\r\ngetack\r\n$1\r\n*\r\n");
             return;
         }
-
+        if (handshakeDone)
+            return;
         sendMessage(message);
     }
 
