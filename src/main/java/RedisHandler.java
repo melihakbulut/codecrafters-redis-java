@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RedisHandler implements Runnable {
 
@@ -19,6 +20,9 @@ public class RedisHandler implements Runnable {
     private static final Data data = new Data();
 
     public static final String notFound = "$-1\r\n";
+
+    private AtomicInteger offset = new AtomicInteger(0);
+    private boolean handshakeDone = false;
 
     public RedisHandler(Socket clientSocket, Configuration configuration, Replication replication) {
         this.clientSocket = clientSocket;
@@ -38,11 +42,9 @@ public class RedisHandler implements Runnable {
 
     public void listenSocket() throws IOException {
         while (true) {
-            //            System.out.print((byte) clientSocket.getInputStream().read() + ",");
-            byte b = (byte) clientSocket.getInputStream().read();
+            byte b = readByteFromSocket();
             if (b == '*') {
-                int commandWordLength = Integer.valueOf(getStringValueOfByte((byte) clientSocket
-                                .getInputStream().read()));
+                int commandWordLength = Integer.valueOf(getStringValueOfByte(readByteFromSocket()));
                 skipNewLine();
                 String[] commandWords = new String[commandWordLength];
                 for (int i = 0; i < commandWordLength; i++) {
@@ -56,12 +58,15 @@ public class RedisHandler implements Runnable {
 
     private void handle(String[] commandWords) throws IOException {
         String message = null;
-        if (checkCommand(commandWords, "ping")) {
+        if (checkCommand(commandWords, "ping") && !handshakeDone) {
             message = "+PONG\r\n";
         } else if (checkCommand(commandWords, "command")
                    || checkCommand(commandWords, "replconf")) {
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "getack", 1)) {
-                message = "*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n";
+                String offsetValue = String.valueOf(offset.get());
+                message = String.format("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$%s\r\n%s\r\n",
+                                        offsetValue.length(), offsetValue);
+                handshakeDone = true;
             } else
                 message = "+OK\r\n";
             //            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
@@ -168,12 +173,12 @@ public class RedisHandler implements Runnable {
     }
 
     private String parseCommand() throws IOException {
-        byte wordValue = (byte) clientSocket.getInputStream().read();
+        byte wordValue = readByteFromSocket();
         byte[] buf = new byte[1024];
 
         int index = 0;
         while (true) {
-            byte b = (byte) clientSocket.getInputStream().read();
+            byte b = readByteFromSocket();
             buf[index] = b;
             try {
                 if (buf[index - 1] == 13 && buf[index] == 10) {
@@ -188,16 +193,28 @@ public class RedisHandler implements Runnable {
         byte[] shrinkedBuffer = new byte[index];
         System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
         int wordLength = Integer.valueOf(new String(shrinkedBuffer));
-        String command = new String(clientSocket.getInputStream().readNBytes(wordLength));
+        String command = new String(readNBytesFromSocket(wordLength));
         skipNewLine();
         return command;
     }
 
     private void skipNewLine() throws IOException {
-        clientSocket.getInputStream().readNBytes(2);
+        readNBytesFromSocket(2);
     }
 
     private String getStringValueOfByte(byte b) {
         return new String(new byte[] {b});
+    }
+
+    private byte readByteFromSocket() throws IOException {
+        byte b = (byte) clientSocket.getInputStream().read();
+        offset.incrementAndGet();
+        return b;
+    }
+
+    private byte[] readNBytesFromSocket(int n) throws IOException {
+        byte[] arr = clientSocket.getInputStream().readNBytes(n);
+        offset.incrementAndGet();
+        return arr;
     }
 }
