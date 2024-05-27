@@ -80,6 +80,7 @@ public class RedisHandler implements Runnable {
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "ack", 1)) {
                 System.out.println("ack came");
                 ackCount.incrementAndGet();
+                System.out.println(ackCount.get());
             } else
                 message = "+OK\r\n";
             //            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
