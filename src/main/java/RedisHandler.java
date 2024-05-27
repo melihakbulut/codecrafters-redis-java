@@ -59,7 +59,7 @@ public class RedisHandler implements Runnable {
     private void handle(String[] commandWords) throws IOException {
         String message = null;
         if (checkCommand(commandWords, "ping")) {
-            if (!handshakeDone)
+            if (handshakeDone)
                 return;
             message = "+PONG\r\n";
         } else if (checkCommand(commandWords, "command")
