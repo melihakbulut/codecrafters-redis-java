@@ -171,6 +171,7 @@ public class RedisHandler implements Runnable {
                 sendMessage(message);
                 return;
             } else {
+                System.out.println("replications size : " + replications.size());
                 message = String.format(":%s\r\n", replications.size());
                 sendMessage(message);
                 return;
