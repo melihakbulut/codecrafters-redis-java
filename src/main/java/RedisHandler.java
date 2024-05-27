@@ -59,7 +59,6 @@ public class RedisHandler implements Runnable {
     }
 
     private void handle(String[] commandWords) throws IOException {
-        System.out.println(Arrays.toString(commandWords));
         String message = null;
         if (checkCommand(commandWords, "ping")) {
             message = "+PONG\r\n";
@@ -158,7 +157,7 @@ public class RedisHandler implements Runnable {
             }
             //            String length = String.valueOf(replications.size());
             //            message = String.format(":%s\r\n", length);
-            message = String.format(":%s\r\n", ackCount);
+            message = String.format(":%s\r\n", ackCount.get());
         }
 
         if (!handshakeDone)
