@@ -22,8 +22,8 @@ public class RedisHandler implements Runnable {
     public static final String notFound = "$-1\r\n";
 
     private AtomicInteger offset = new AtomicInteger(0);
-    private static Integer previousAckedOffset = 0;
-    private static Integer currentAckedOffset = 0;
+    //    private static Integer previousAckedOffset = 0;
+    //    private static Integer currentAckedOffset = 0;
     private boolean handshakeDone = false;
 
     private static AtomicInteger ackCount = new AtomicInteger(0);
@@ -81,7 +81,7 @@ public class RedisHandler implements Runnable {
             }
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "ack", 1)) {
                 ackCount.incrementAndGet();
-                currentAckedOffset = Integer.parseInt(commandWords[2]);
+                //                currentAckedOffset = Integer.parseInt(commandWords[2]);
                 return;
             } else
                 message = "+OK\r\n";
@@ -150,32 +150,22 @@ public class RedisHandler implements Runnable {
             return;
         } else if (checkCommand(commandWords, "wait")) {
 
-            if (previousAckedOffset < currentAckedOffset) {
-                for (Socket socket : replications) {
-                    socket.getOutputStream()
-                                    .write("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n"
-                                                    .getBytes());
-                }
-                int timeout = Integer.parseInt(commandWords[2]);
-                try {
-                    Thread.sleep(timeout);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                //            String length = String.valueOf(replications.size());
-                //            message = String.format(":%s\r\n", length);
-                message = String.format(":%s\r\n", ackCount.get());
-                ackCount.set(0);
-                previousAckedOffset = currentAckedOffset;
-                sendMessage(message);
-                return;
-            } else {
-                System.out.println("replications size : " + replications.size());
-                message = String.format(":%s\r\n", replications.size());
-                sendMessage(message);
-                return;
+            for (Socket socket : replications) {
+                socket.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n"
+                                .getBytes());
             }
+            int timeout = Integer.parseInt(commandWords[2]);
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            //            String length = String.valueOf(replications.size());
+            //            message = String.format(":%s\r\n", length);
+            message = String.format(":%s\r\n", ackCount.get());
+            ackCount.set(0);
+
         }
 
         if (!handshakeDone)
