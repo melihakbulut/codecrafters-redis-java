@@ -174,9 +174,9 @@ public class RedisHandler implements Runnable {
             String key = commandWords[1];
             String value = Main.getData().getKeyValueMap().get(key);
             if (value == null)
-                message = "none\r\n";
+                message = "+none\r\n";
             else
-                message = "string\r\n";
+                message = "+string\r\n";
         }
 
         if (!handshakeDone)
