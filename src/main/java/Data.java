@@ -57,9 +57,9 @@ public class Data {
                                 if (pair.getExpiry() != null) {
                                     long expiryValue = pair.getExpiry()
                                                        - System.currentTimeMillis();
-                                    System.out.println("parse pair " + pair + "expiry : "
+                                    System.out.println("parse pair " + pair + " expiry : "
                                                        + expiryValue);
-                                    putMap(pair.getKey(), pair.getValue(), -1l);
+                                    putMap(pair.getKey(), pair.getValue(), expiryValue);
                                 } else
                                     putMap(pair.getKey(), pair.getValue());
                             }
