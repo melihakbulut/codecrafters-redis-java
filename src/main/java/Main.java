@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Main {
@@ -20,6 +21,7 @@ public class Main {
     }
 
     public static Pair parseAsPair(ByteBuffer buffer) {
+        long expiry = buffer.get();
         String key = null;
         String value = null;
         int keyLength = buffer.get();
@@ -31,7 +33,7 @@ public class Main {
         byte[] valueBuffer = new byte[valueLength];
         buffer.get(valueBuffer, 0, valueLength);
         value = new String(valueBuffer);
-        return Pair.builder().key(key).value(value).build();
+        return Pair.builder().key(key).value(value).expiry(expiry).build();
     }
 
     public static void main(String[] args) {
@@ -50,18 +52,30 @@ public class Main {
         //                                 97, 112, 112, 108, 101, 6, 98, 97, 110, 97, 110, 97, 0, 5, 109, 97,
         //                                 110, 103, 111, 10, 115, 116, 114, 97, 119, 98, 101, 114, 114, 121,
         //                                 -1, 7, 10, -26, 23, 89, 33, -96, 46, 10};
-        //
+        byte[] arr = new byte[] {82, 69, 68, 73, 83, 48, 48, 48, 51, -6, 10, 114, 101, 100, 105,
+                                 115, 45, 98, 105, 116, 115, -64, 64, -6, 9, 114, 101, 100, 105,
+                                 115, 45, 118, 101, 114, 5, 55, 46, 50, 46, 48, -2, 0, -5, 3, 3, -4,
+                                 0, -100, -17, 18, 126, 1, 0, 0, 0, 5, 109, 97, 110, 103, 111, 10,
+                                 115, 116, 114, 97, 119, 98, 101, 114, 114, 121, -4, 0, 12, 40,
+                                 -118, -57, 1, 0, 0, 0, 9, 114, 97, 115, 112, 98, 101, 114, 114,
+                                 121, 9, 114, 97, 115, 112, 98, 101, 114, 114, 121, -4, 0, 12, 40,
+                                 -118, -57, 1, 0, 0, 0, 9, 112, 105, 110, 101, 97, 112, 112, 108,
+                                 101, 9, 98, 108, 117, 101, 98, 101, 114, 114, 121, -1, -88, 2, 57,
+                                 1, 71, 112, -28, 99, 10};
+
+        System.out.println(Arrays.toString("mango".getBytes()));
         //        byte[] buf = arr;
         //        int index = 0;
         //        while (true) {
         //            try {
-        //                if (buf[index - 3] == -5 && buf[index - 1] == 0 && buf[index] == 0) {
+        //                if (buf[index - 3] == -5
+        //                //                                && buf[index - 1] == 0
+        //                ) {
         //                    int pairCount = buf[index - 2];
         //                    ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
-        //                    byteBuffer.position(++index);
+        //                    byteBuffer.position(index);
         //                    for (int i = 0; i < pairCount; i++) {
         //                        System.out.println(parseAsPair(byteBuffer));
-        //                        byteBuffer.get();
         //                    }
         //
         //                    break;
