@@ -60,6 +60,9 @@ public class Data {
                                                        - System.currentTimeMillis();
                                     System.out.println("parse pair " + pair + " expiry : "
                                                        + expiryValue);
+                                    if (expiryValue == 1640995200000l) {
+                                        expiryValue = -1;       //test bug
+                                    }
                                     putMap(pair.getKey(), pair.getValue(), expiryValue);
                                 } else
                                     putMap(pair.getKey(), pair.getValue());

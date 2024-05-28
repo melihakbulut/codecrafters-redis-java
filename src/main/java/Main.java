@@ -24,7 +24,7 @@ public class Main {
     public static Pair parseAsPair(ByteBuffer buffer) {
         Long expiry = null;
         if (buffer.get() == -4) {
-            expiry = buffer.order(ByteOrder.LITTLE_ENDIAN).getLong();
+            expiry = buffer.getLong();
             buffer.get();
         }
         String key = null;
@@ -88,6 +88,7 @@ public class Main {
                 if (buf[index - 3] == -5) {
                     int pairCount = buf[index - 2];
                     ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
+                    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
                     byteBuffer.position(index);
                     for (int i = 0; i < pairCount; i++) {
                         System.out.println(parseAsPair(byteBuffer));
