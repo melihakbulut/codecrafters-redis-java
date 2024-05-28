@@ -16,8 +16,8 @@ public class Data {
     public Data(Configuration configuration) {
         this.configuration = configuration;
         File dbFile = new File(configuration.getDir() + configuration.getDbFileName());
-        System.out.println(dbFile.getAbsolutePath() + " will be checking");
         if (dbFile.exists()) {
+            System.out.println(dbFile.getAbsolutePath() + "file exists");
             try {
                 byte[] b = Files.readAllBytes(dbFile.toPath());
                 System.out.println(Arrays.toString(b));
