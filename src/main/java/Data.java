@@ -1,7 +1,7 @@
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -19,10 +19,26 @@ public class Data {
         if (dbFile.exists()) {
             System.out.println(dbFile.getAbsolutePath() + " file exists");
             try {
-                byte[] b = Files.readAllBytes(dbFile.toPath());
-                System.out.println(Arrays.toString(b));
-                System.out.println(new String(b));
-                putMap("pineapple", "pear");
+                //                byte[] b = Files.readAllBytes(dbFile.toPath());
+                InputStream is = new FileInputStream(dbFile);
+                is.readNBytes(47);
+                int index = 0;
+                byte[] buf = new byte[1000];
+                while (true) {
+                    byte b = (byte) is.read();
+                    if (b == -1)
+                        break;
+                    buf[index] = b;
+                    index++;
+                }
+                byte[] shrinkedBuffer = new byte[index];
+                System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
+
+                String command = new String(shrinkedBuffer);
+                System.out.println(command);
+                //                System.out.println(Arrays.toString(b));
+                //                System.out.println(new String(b));
+                //                putMap("pineapple", "pear");
             } catch (IOException e) {
                 e.printStackTrace();
             }
