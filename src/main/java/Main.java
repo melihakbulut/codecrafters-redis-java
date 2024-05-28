@@ -5,6 +5,12 @@ import java.util.Objects;
 
 public class Main {
 
+    private static Data data;
+
+    public static Data getData() {
+        return data;
+    }
+
     public static void main(String[] args) {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
@@ -25,7 +31,7 @@ public class Main {
         }
         Configuration configuration = Configuration.builder().replicaOf(replicaOf).port(port)
                         .dir(dir).dbFileName(dbFileName).build();
-
+        data = new Data(configuration);
         String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
         Replication replication = new Replication(configuration, role);
 

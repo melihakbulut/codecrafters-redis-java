@@ -17,7 +17,6 @@ public class RedisHandler implements Runnable {
     private static final List<Socket> replications = new ArrayList<Socket>();
     private Replication replication;
     private static Configuration configuration;
-    private static final Data data = new Data(configuration);
 
     public static final String notFound = "$-1\r\n";
 
@@ -88,9 +87,10 @@ public class RedisHandler implements Runnable {
 
         } else if (checkCommand(commandWords, "set")) {
             if (commandWords.length > 3)
-                data.putMap(commandWords[1], commandWords[2], Long.parseLong(commandWords[4]));
+                Main.getData().putMap(commandWords[1], commandWords[2],
+                                      Long.parseLong(commandWords[4]));
             else
-                data.putMap(commandWords[1], commandWords[2]);
+                Main.getData().putMap(commandWords[1], commandWords[2]);
 
             message = "+OK\r\n";
 
@@ -109,7 +109,7 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "get")) {
             try {
 
-                String value = data.getFromMap(commandWords[1]);
+                String value = Main.getData().getFromMap(commandWords[1]);
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
             } catch (Exception e) {
                 message = notFound;
