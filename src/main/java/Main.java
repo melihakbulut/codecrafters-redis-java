@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Main {
@@ -13,14 +12,23 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        byte[] arr = new byte[] {82, 69, 68, 73, 83, 48, 48, 48, 51, -6, 10, 114, 101, 100, 105,
-                                 115, 45, 98, 105, 116, 115, -64, 64, -6, 9, 114, 101, 100, 105,
-                                 115, 45, 118, 101, 114, 5, 55, 46, 50, 46, 48, -2, 0, -5, 1, 0, 0,
-                                 9, 112, 105, 110, 101, 97, 112, 112, 108, 101, 4, 112, 101, 97,
-                                 114, -1, -34, 113, -19, 22, -2, 83, -65, -35, 10};
-        System.out.println(Arrays.toString("pineapple".getBytes()));
-        System.out.println(Arrays.toString("pear".getBytes()));
-        System.out.println(new String(arr));
+        //        byte[] arr = new byte[] {82, 69, 68, 73, 83, 48, 48, 48, 51, -6, 10, 114, 101, 100, 105,
+        //                                 115, 45, 98, 105, 116, 115, -64, 64, -6, 9, 114, 101, 100, 105,
+        //                                 115, 45, 118, 101, 114, 5, 55, 46, 50, 46, 48, -2, 0, -5, 1, 0, 0,
+        //                                 9, 112, 105, 110, 101, 97, 112, 112, 108, 101, 4, 112, 101, 97,
+        //                                 114, -1, -34, 113, -19, 22, -2, 83, -65, -35, 10};
+        //        System.out.println(Arrays.toString("pineapple".getBytes()));
+        //        System.out.println(Arrays.toString("pear".getBytes()));
+        //        System.out.println(Arrays.toString("REDIS0003".getBytes()));
+        //        System.out.println(Arrays.toString("redis-bits".getBytes()));
+        //        System.out.println(Arrays.toString("7.2.0".getBytes()));
+        //        System.out.println("asd" + new String(new byte[] {(byte) 9}));
+        //
+        //        byte newArr[] = new byte[arr.length - 47];
+        //        System.arraycopy(arr, 47, newArr, 0, 24);
+        //        System.err.println(new String(newArr));
+        //
+        //        System.out.println(new String(arr));
 
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");

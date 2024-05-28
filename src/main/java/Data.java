@@ -22,6 +22,7 @@ public class Data {
                 byte[] b = Files.readAllBytes(dbFile.toPath());
                 System.out.println(Arrays.toString(b));
                 System.out.println(new String(b));
+                putMap("pineapple", "pear");
             } catch (IOException e) {
                 e.printStackTrace();
             }
