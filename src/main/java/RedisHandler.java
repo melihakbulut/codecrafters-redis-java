@@ -169,9 +169,7 @@ public class RedisHandler implements Runnable {
             if (Main.getData().getKeyValueMap().isEmpty())
                 message = "*0\r\n";
             else {
-                //                message = Main.getData().getKeyValueMap().entrySet();
-
-                message = String.format("$%s\r\n%s\r\n", "pineapple".length(), "pineapple");
+                message = String.format("*1\r\n$%s\r\n%s\r\n", "pineapple".length(), "pineapple");
             }
         }
 
