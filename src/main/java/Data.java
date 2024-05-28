@@ -49,6 +49,7 @@ public class Data {
                             byteBuffer.position(++index);
                             for (int i = 0; i < pairCount; i++) {
                                 Pair pair = parseAsPair(byteBuffer);
+                                System.out.println("parse pair " + pair);
                                 putMap(pair.getKey(), pair.getValue());
                                 byteBuffer.get();
                             }
