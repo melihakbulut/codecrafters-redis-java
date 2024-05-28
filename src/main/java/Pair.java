@@ -9,5 +9,5 @@ public class Pair {
 
     private String key;
     private String value;
-    private long expiry;
+    private Long expiry;
 }

@@ -54,8 +54,11 @@ public class Data {
                             for (int i = 0; i < pairCount; i++) {
                                 Pair pair = parseAsPair(byteBuffer);
                                 System.out.println("parse pair " + pair);
-                                putMap(pair.getKey(), pair.getValue());
-                                byteBuffer.get();
+                                if (pair.getExpiry() != null)
+                                    putMap(pair.getKey(), pair.getValue(),
+                                           pair.getExpiry() - System.currentTimeMillis());
+                                else
+                                    putMap(pair.getKey(), pair.getValue());
                             }
 
                             break;
