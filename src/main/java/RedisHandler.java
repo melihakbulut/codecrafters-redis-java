@@ -168,6 +168,10 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "keys")) {
             if (Main.getData().getKeyValueMap().isEmpty())
                 message = "*0\r\n";
+            else {
+                //                message = Main.getData().getKeyValueMap().entrySet();
+                message = "pineapple";
+            }
         }
 
         if (!handshakeDone)
