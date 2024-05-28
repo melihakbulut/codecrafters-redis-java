@@ -10,15 +10,21 @@ public class Main {
         System.out.println("Logs from your program will appear here!");
         Integer port = 6379;
         String replicaOf = null;
+        String dir = null;
+        String dbFileName = null;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--port")) {
                 port = Integer.valueOf(args[i + 1]);
             } else if (args[i].equals("--replicaof")) {
                 replicaOf = args[i + 1];
+            } else if (args[i].equals("--dir")) {
+                dir = args[i + 1];
+            } else if (args[i].equals("--dbfilename")) {
+                dbFileName = args[i + 1];
             }
         }
         Configuration configuration = Configuration.builder().replicaOf(replicaOf).port(port)
-                        .build();
+                        .dir(dir).dbFileName(dbFileName).build();
 
         String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
         Replication replication = new Replication(configuration, role);

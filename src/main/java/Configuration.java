@@ -9,4 +9,6 @@ public class Configuration {
 
     private String replicaOf;
     private Integer port;
+    private String dir;
+    private String dbFileName;
 }

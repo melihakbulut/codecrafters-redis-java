@@ -72,25 +72,16 @@ public class RedisHandler implements Runnable {
                     offset.set(0);
                     handshakeDone = true;
                 }
-
                 offsetValue = String.valueOf(offset.get());
                 message = String.format("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$%s\r\n%s\r\n",
                                         offsetValue.length(), offsetValue);
                 sendMessage(message);
-
             }
             if (checkCommand(commandWords, "replconf") && checkCommand(commandWords, "ack", 1)) {
                 ackCount.incrementAndGet();
-                //                currentAckedOffset = Integer.parseInt(commandWords[2]);
                 return;
             } else
                 message = "+OK\r\n";
-            //            if (commandWords.length == 3 && !commandWords[2].equals("psync2")) {
-            //                String host = ((InetSocketAddress) clientSocket.getRemoteSocketAddress())
-            //                                .getHostName();
-            //                String port = commandWords[2];
-            //                replicationConnectQueue.add(host + ":" + port);
-            //            }
         } else if (checkCommand(commandWords, "echo")) {
 
             message = String.format("$%s\r\n%s\r\n", commandWords[1].length(), commandWords[1]);
@@ -104,11 +95,6 @@ public class RedisHandler implements Runnable {
             message = "+OK\r\n";
 
             if (replication.getKeyValueMap().get("role").equals("master")) {
-                //                while (!replicationConnectQueue.isEmpty()) {
-                //                    String replicationConfigItem = replicationConnectQueue.poll();
-                //                    String[] arr = replicationConfigItem.split(":");
-                //                    replications.add(new Socket(arr[0], Integer.valueOf(arr[1])));
-                //                }
 
                 String key = commandWords[1];
                 String value = commandWords[2];
@@ -120,15 +106,11 @@ public class RedisHandler implements Runnable {
                     replica.getOutputStream().write(replicaMessage.getBytes());
                 }
             }
-
         } else if (checkCommand(commandWords, "get")) {
             try {
 
                 String value = data.getFromMap(commandWords[1]);
-                //                if (!value.isEmpty())
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
-                //                else
-                //                    message = notFound;
             } catch (Exception e) {
                 message = notFound;
             }
@@ -164,14 +146,25 @@ public class RedisHandler implements Runnable {
                     e.printStackTrace();
                 }
             }
-            //            String length = String.valueOf(replications.size());
-            //            message = String.format(":%s\r\n", length);
             if (ackCount.get() == 0) {
                 message = String.format(":%s\r\n", replications.size());
             } else {
                 message = String.format(":%s\r\n", ackCount.get());
                 ackCount.set(0);
             }
+        } else if (checkCommand(commandWords, "CONFIG")) {
+            if (commandWords.length <= 2)
+                message = String.format("*2\r\n$3\r\ndir\r\n$%s\r\n%s\r\n$10\r\ndbfilename\r\n$%s\r\n%s\r\n",
+                                        configuration.getDir().length(), configuration.getDir(),
+                                        configuration.getDbFileName().length(),
+                                        configuration.getDbFileName());
+            else if (commandWords[2].equals("dir"))
+                message = String.format("*2\r\n$3\r\ndir\r\n$%s\r\n%s\r\n",
+                                        configuration.getDir().length(), configuration.getDir());
+            else if (commandWords[2].equals("dbfilename"))
+                message = String.format("*2\r\n$10\r\ndbfilename\r\n$%s\r\n%s\r\n",
+                                        configuration.getDbFileName().length(),
+                                        configuration.getDbFileName());
         }
 
         if (!handshakeDone)
