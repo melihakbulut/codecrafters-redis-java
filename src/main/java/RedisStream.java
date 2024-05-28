@@ -33,17 +33,19 @@ public class RedisStream {
         }
         boolean autoInc = idArr[1].equals("*");
 
-        if (!autoInc) {
+        if (autoInc) {
+            lastIndex++;
+        } else {
             Long sentIndex = Long.parseLong(idArr[1]);
 
             if (sentIndex <= lastIndex) {
                 throw new IllegalArgumentException(
                                 "ERR The ID specified in XADD is equal or smaller than the target stream top item");
             }
-
+            lastIndex = sentIndex;
         }
 
-        Long nextIndex = lastIndex + 1;
+        Long nextIndex = lastIndex;
         indexes.add(nextIndex);
         stream.put(ms, indexes);
         streamValues.put(ms + "-" + nextIndex, Pair.builder().key(key).value(value).build());
