@@ -8,7 +8,7 @@ public class RedisStream {
     //time,id
     private Map<Long, List<Long>> stream = new ConcurrentHashMap<Long, List<Long>>();
     private long lastID = -1;
-    private long lastIndex = 0;
+    private long lastIndex = -1;
     //time+index, Pair
     private Map<String, Pair> streamValues = new ConcurrentHashMap<String, Pair>();
 
@@ -23,7 +23,7 @@ public class RedisStream {
         if (idArr[1] != "*") {
             index = Long.parseLong(idArr[1]);
         } else {
-            index = lastIndex + 1;
+            index = lastIndex+1;
         }
         List<Long> indexList = stream.get(index);
 
