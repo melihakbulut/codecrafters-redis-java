@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -6,6 +10,22 @@ import lombok.Getter;
 
 @Getter
 public class Data {
+
+    private Configuration configuration;
+
+    public Data(Configuration configuration) {
+        this.configuration = configuration;
+        File dbFile = new File(configuration.getDir() + configuration.getDbFileName());
+        if (dbFile.exists()) {
+            try {
+                byte[] b = Files.readAllBytes(dbFile.toPath());
+                System.out.println(Arrays.toString(b));
+                System.out.println(new String(b));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private Map<String, String> keyValueMap = new HashMap<String, String>();
     private Map<String, Long> keyEntryTimeMap = new HashMap<String, Long>();

@@ -16,8 +16,8 @@ public class RedisHandler implements Runnable {
 
     private static final List<Socket> replications = new ArrayList<Socket>();
     private Replication replication;
-    private Configuration configuration;
-    private static final Data data = new Data();
+    private static Configuration configuration;
+    private static final Data data = new Data(configuration);
 
     public static final String notFound = "$-1\r\n";
 
@@ -152,7 +152,7 @@ public class RedisHandler implements Runnable {
                 message = String.format(":%s\r\n", ackCount.get());
                 ackCount.set(0);
             }
-        } else if (checkCommand(commandWords, "CONFIG")) {
+        } else if (checkCommand(commandWords, "config")) {
             if (commandWords.length <= 2)
                 message = String.format("*2\r\n$3\r\ndir\r\n$%s\r\n%s\r\n$10\r\ndbfilename\r\n$%s\r\n%s\r\n",
                                         configuration.getDir().length(), configuration.getDir(),
@@ -165,6 +165,8 @@ public class RedisHandler implements Runnable {
                 message = String.format("*2\r\n$10\r\ndbfilename\r\n$%s\r\n%s\r\n",
                                         configuration.getDbFileName().length(),
                                         configuration.getDbFileName());
+        } else if (checkCommand(commandWords, "keys")) {
+
         }
 
         if (!handshakeDone)
