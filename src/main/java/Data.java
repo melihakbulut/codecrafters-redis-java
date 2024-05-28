@@ -59,7 +59,7 @@ public class Data {
                                                        - System.currentTimeMillis();
                                     System.out.println("parse pair " + pair + "expiry : "
                                                        + expiryValue);
-                                    putMap(pair.getKey(), pair.getValue(), expiryValue);
+                                    putMap(pair.getKey(), pair.getValue(), -1l);
                                 } else
                                     putMap(pair.getKey(), pair.getValue());
                             }
