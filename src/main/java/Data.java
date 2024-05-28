@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -21,6 +22,7 @@ public class Data {
                 String key = null;
                 String value = null;
                 byte[] buf = Files.readAllBytes(dbFile.toPath());
+                System.out.println(Arrays.toString(buf));
                 int index = 0;
                 while (true) {
                     try {
