@@ -76,7 +76,7 @@ public class Data {
         }
     }
 
-    private Map<String, String> keyValueMap = new HashMap<String, String>();
+    private Map<String, Object> keyValueMap = new HashMap<String, Object>();
     private Map<String, Long> keyEntryTimeMap = new HashMap<String, Long>();
 
     public void putMap(String key, String value, Long timeoutMs) {
@@ -96,7 +96,7 @@ public class Data {
         putMap(key, value, -1l);
     }
 
-    public String getFromMap(String key) throws Exception {
+    public Object getFromMap(String key) throws Exception {
 
         System.out.println(keyEntryTimeMap.get(key));
         System.out.println(System.currentTimeMillis());

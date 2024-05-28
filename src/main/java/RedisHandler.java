@@ -109,7 +109,7 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "get")) {
             try {
 
-                String value = Main.getData().getFromMap(commandWords[1]);
+                String value = Main.getData().getFromMap(commandWords[1]).toString();
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
             } catch (Exception e) {
                 message = notFound;
@@ -172,11 +172,13 @@ public class RedisHandler implements Runnable {
             }
         } else if (checkCommand(commandWords, "type")) {
             String key = commandWords[1];
-            String value = Main.getData().getKeyValueMap().get(key);
+            String value = Main.getData().getKeyValueMap().get(key).toString();
             if (value == null)
                 message = "+none\r\n";
             else
                 message = "+string\r\n";
+        } else if (checkCommand(commandWords, "xadd")) {
+
         }
 
         if (!handshakeDone)
