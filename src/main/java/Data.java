@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -19,30 +18,61 @@ public class Data {
         if (dbFile.exists()) {
             System.out.println(dbFile.getAbsolutePath() + " file exists");
             try {
-                byte[] b = Files.readAllBytes(dbFile.toPath());
-                //                InputStream is = new FileInputStream(dbFile);
-                //                is.readNBytes(47);
-                //                int index = 0;
-                //                byte[] buf = new byte[1000];
-                //                while (true) {
-                //                    byte b = (byte) is.read();
-                //                    if (b == -1)
-                //                        break;
-                //                    buf[index] = b;
-                //                    index++;
-                //                }
-                //                byte[] shrinkedBuffer = new byte[index];
-                //                System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
-                //
-                //                String command = new String(shrinkedBuffer);
-                //                System.out.println(Arrays.toString(command.split(new String(new byte[] {4}))));
-                System.out.println(Arrays.toString(b));
-                System.out.println(new String(b));
-                putMap("pineapple", "pear");
+                String key = null;
+                String value = null;
+                byte[] buf = Files.readAllBytes(dbFile.toPath());
+                int index = 0;
+                while (true) {
+                    try {
+                        if (buf[index - 3] == -5 && buf[index - 2] == 1 && buf[index - 1] == 0
+                            && buf[index] == 0) {
+                            int keyLength = buf[++index];
+                            byte[] keyBuffer = new byte[keyLength];
+                            System.arraycopy(buf, index + 1, keyBuffer, 0, keyLength);
+                            key = new String(keyBuffer);
+                            index += keyLength;
+
+                            int valueLength = buf[++index];
+                            byte[] valueBuffer = new byte[valueLength];
+                            System.arraycopy(buf, index + 1, valueBuffer, 0, valueLength);
+                            value = new String(valueBuffer);
+                            index += valueLength;
+                            break;
+
+                        }
+                    } catch (Exception e) {
+
+                    }
+
+                    index++;
+                }
+
+                putMap(key, value);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String getStringValueOfByte(byte b) {
+        return new String(new byte[] {b});
+    }
+
+    public String byteArrayToHex(byte[] a) {
+        StringBuilder sb = new StringBuilder(a.length * 2);
+        for (byte b : a)
+            sb.append(String.format("%02x", b));
+        return sb.toString();
+    }
+
+    public static byte[] hexStringToByteArray(String hex) {
+        int l = hex.length();
+        byte[] data = new byte[l / 2];
+        for (int i = 0; i < l; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                                  + Character.digit(hex.charAt(i + 1), 16));
+        }
+        return data;
     }
 
     private Map<String, String> keyValueMap = new HashMap<String, String>();
