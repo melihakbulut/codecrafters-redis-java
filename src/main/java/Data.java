@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -35,7 +36,7 @@ public class Data {
                 System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
 
                 String command = new String(shrinkedBuffer);
-                System.out.println(command);
+                System.out.println(Arrays.toString(command.split("\\s+")));
                 //                System.out.println(Arrays.toString(b));
                 //                System.out.println(new String(b));
                 //                putMap("pineapple", "pear");
