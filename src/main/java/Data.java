@@ -53,7 +53,10 @@ public class Data {
                             byteBuffer.position(index);
                             for (int i = 0; i < pairCount; i++) {
                                 Pair pair = parseAsPair(byteBuffer);
-                                System.out.println("parse pair " + pair);
+                                System.out.println("parse pair " + pair + "expiry"
+                                                   + (pair.getExpiry()
+                                                      - System.currentTimeMillis()));
+
                                 if (pair.getExpiry() != null)
                                     putMap(pair.getKey(), pair.getValue(),
                                            pair.getExpiry() - System.currentTimeMillis());
