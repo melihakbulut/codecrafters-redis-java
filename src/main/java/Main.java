@@ -72,13 +72,13 @@ public class Main {
                                  121, 5, 97, 112, 112, 108, 101, -1, -106, 87, -18, 64, 58, -8, 2,
                                  71, 10};
 
-        System.out.println(Arrays.toString("pear".getBytes()));
+        System.out.println(Arrays.toString("banana".getBytes()));
         System.out.println((byte) 0xFC);
         System.out.println(ByteBuffer.wrap(new byte[] {0, 12, 40, -118, -57, 1, 0, 0})
                         .order(ByteOrder.LITTLE_ENDIAN).getLong());
         System.out.println(ByteBuffer.wrap(new byte[] {0, -100, -17, 18, 126, 1, 0, 0})
                         .order(ByteOrder.LITTLE_ENDIAN).getLong());
-        System.out.println(ByteBuffer.wrap(new byte[] {0, 12, 40, -118, -57, 1, 0, 0})
+        System.out.println(ByteBuffer.wrap(new byte[] {0, -100, -17, 18, 126, 1, 0, 0, 0})
                         .order(ByteOrder.LITTLE_ENDIAN).getLong());
 
         byte[] buf = arr;
