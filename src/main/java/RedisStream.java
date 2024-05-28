@@ -16,7 +16,13 @@ public class RedisStream {
                             "ERR The ID specified in XADD must be greater than 0-0");
         }
         String[] idArr = id.split("-");
-        Long ms = Long.parseLong(idArr[0]);
+        boolean autoIncWhole = idArr[0].equals("*");
+        Long ms = null;
+        if (autoIncWhole)
+            ms = System.currentTimeMillis() / 1000;
+        else
+            ms = Long.parseLong(idArr[0]);
+
         for (Long msValues : stream.keySet()) {
             if (ms < msValues)
                 throw new IllegalArgumentException(
@@ -37,7 +43,7 @@ public class RedisStream {
             else
                 lastIndex = -1;
         }
-        boolean autoInc = idArr[1].equals("*");
+        boolean autoInc = autoIncWhole ? true : idArr[1].equals("*");
 
         if (autoInc) {
             lastIndex++;
