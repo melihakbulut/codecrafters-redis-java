@@ -181,9 +181,9 @@ public class RedisHandler implements Runnable {
                 message = "+string\r\n";
         } else if (checkCommand(commandWords, "xadd")) {
             String streamKey = commandWords[1];
-            String index = commandWords[1];
-            String key = commandWords[1];
-            String value = commandWords[1];
+            String index = commandWords[2];
+            String key = commandWords[3];
+            String value = commandWords[4];
             Main.getData().getKeyValueMap()
                             .put(streamKey,
                                  RedisStream.builder().index(index).key(key).value(value).build());
