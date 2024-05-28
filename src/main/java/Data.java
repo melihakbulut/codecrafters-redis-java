@@ -50,7 +50,7 @@ public class Data {
                         if (buf[index - 3] == -5) {
                             int pairCount = buf[index - 2];
                             ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
-                            byteBuffer.position(++index);
+                            byteBuffer.position(index);
                             for (int i = 0; i < pairCount; i++) {
                                 Pair pair = parseAsPair(byteBuffer);
                                 System.out.println("parse pair " + pair);
