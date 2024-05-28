@@ -23,6 +23,7 @@ public class Data {
                 String value = null;
                 byte[] buf = Files.readAllBytes(dbFile.toPath());
                 System.out.println(Arrays.toString(buf));
+                System.out.println(new String(buf));
                 int index = 0;
                 while (true) {
                     try {
