@@ -181,13 +181,13 @@ public class RedisHandler implements Runnable {
                 message = "+string\r\n";
         } else if (checkCommand(commandWords, "xadd")) {
             String streamKey = commandWords[1];
-            String index = commandWords[2];
+            String id = commandWords[2];
             String key = commandWords[3];
             String value = commandWords[4];
-            Main.getData().getKeyValueMap()
-                            .put(streamKey,
-                                 RedisStream.builder().index(index).key(key).value(value).build());
-            message = String.format("$%s\r\n%s\r\n", index.length(), index);
+            RedisStream redisStream = new RedisStream();
+            redisStream.putMap(id, key, value);
+            Main.getData().getKeyValueMap().put(streamKey, redisStream);
+            message = String.format("$%s\r\n%s\r\n", id.length(), id);
         }
 
         if (!handshakeDone)
