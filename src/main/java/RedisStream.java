@@ -19,7 +19,7 @@ public class RedisStream {
         boolean autoIncWhole = idArr[0].equals("*");
         Long ms = null;
         if (autoIncWhole)
-            ms = System.currentTimeMillis() / 1000;
+            ms = System.currentTimeMillis();
         else
             ms = Long.parseLong(idArr[0]);
 
