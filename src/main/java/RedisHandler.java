@@ -166,13 +166,9 @@ public class RedisHandler implements Runnable {
                                         configuration.getDbFileName().length(),
                                         configuration.getDbFileName());
         } else if (checkCommand(commandWords, "keys")) {
-            if (Main.getData().getKeyValueMap().isEmpty())
-                message = "*0\r\n";
-            else {
-                message = "*1\r\n";
-                for (String key : Main.getData().getKeyValueMap().keySet()) {
-                    message += String.format("$%s\r\n%s\r\n", key.length(), key);
-                }
+            message = String.format("*%s\r\n", Main.getData().getKeyValueMap().keySet().size());
+            for (String key : Main.getData().getKeyValueMap().keySet()) {
+                message += String.format("$%s\r\n%s\r\n", key.length(), key);
             }
         }
 
