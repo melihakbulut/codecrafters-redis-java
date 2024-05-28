@@ -65,4 +65,7 @@ public class RedisStream {
 
     }
 
+    public List<Pair> getBetweenFromMs(String fromMs, String toMs) throws IllegalArgumentException {
+        return null;
+    }
 }
