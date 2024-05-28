@@ -42,6 +42,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
+
+        System.out.println(System.currentTimeMillis() - 1956528000000l);
+
         //        byte[] arr = new byte[] {82, 69, 68, 73, 83, 48, 48, 48, 51, -6, 10, 114, 101, 100, 105,
         //                                 115, 45, 98, 105, 116, 115, -64, 64, -6, 9, 114, 101, 100, 105,
         //                                 115, 45, 118, 101, 114, 5, 55, 46, 50, 46, 48, -2, 0, -5, 1, 0, 0,
