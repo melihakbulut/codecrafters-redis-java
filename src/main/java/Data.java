@@ -36,7 +36,7 @@ public class Data {
                 System.arraycopy(buf, 0, shrinkedBuffer, 0, index);
 
                 String command = new String(shrinkedBuffer);
-                System.out.println(Arrays.toString(command.split("\\s+")));
+                System.out.println(Arrays.toString(command.split(new String(new byte[] {4}))));
                 //                System.out.println(Arrays.toString(b));
                 //                System.out.println(new String(b));
                 //                putMap("pineapple", "pear");
