@@ -191,9 +191,9 @@ public class RedisHandler implements Runnable {
                 String id = commandWords[2];
                 String key = commandWords[3];
                 String value = commandWords[4];
-                redisStream.putMap(id, key, value);
+                String lastId = redisStream.putMap(id, key, value);
                 Main.getData().getKeyValueMap().put(streamKey, redisStream);
-                message = String.format("$%s\r\n%s\r\n", id.length(), id);
+                message = String.format("$%s\r\n%s\r\n", lastId.length(), lastId);
             } catch (IllegalArgumentException e) {
                 message = String.format("-%s\r\n", e.getMessage());
             }
