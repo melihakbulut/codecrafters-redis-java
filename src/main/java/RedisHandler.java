@@ -166,7 +166,8 @@ public class RedisHandler implements Runnable {
                                         configuration.getDbFileName().length(),
                                         configuration.getDbFileName());
         } else if (checkCommand(commandWords, "keys")) {
-
+            if (Main.getData().getKeyValueMap().isEmpty())
+                message = "*0\r\n";
         }
 
         if (!handshakeDone)
