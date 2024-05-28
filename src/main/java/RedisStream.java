@@ -13,13 +13,14 @@ public class RedisStream {
     public String putMap(String id, String key, String value) throws IllegalArgumentException {
         if (id.equals("0-0")) {
             throw new IllegalArgumentException(
-                            "ERR The ID specified in XADD is equal or smaller than the target stream top item");
+                            "ERR The ID specified in XADD must be greater than 0-0");
         }
         String[] idArr = id.split("-");
         Long ms = Long.parseLong(idArr[0]);
         for (Long msValues : stream.keySet()) {
             if (ms < msValues)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(
+                                "ERR The ID specified in XADD is equal or smaller than the target stream top item");
         }
 
         long lastIndex = 0;
