@@ -172,13 +172,22 @@ public class RedisHandler implements Runnable {
             }
         } else if (checkCommand(commandWords, "type")) {
             String key = commandWords[1];
-            String value = Main.getData().getKeyValueMap().get(key).toString();
+            Object value = Main.getData().getKeyValueMap().get(key);
             if (value == null)
                 message = "+none\r\n";
+            else if (value instanceof RedisStream)
+                message = "+stream\r\n";
             else
                 message = "+string\r\n";
         } else if (checkCommand(commandWords, "xadd")) {
-
+            String streamKey = commandWords[1];
+            String index = commandWords[1];
+            String key = commandWords[1];
+            String value = commandWords[1];
+            Main.getData().getKeyValueMap()
+                            .put(streamKey,
+                                 RedisStream.builder().index(index).key(key).value(value).build());
+            message = String.format("$%s\r\n%s\r\n", index.length(), index);
         }
 
         if (!handshakeDone)
