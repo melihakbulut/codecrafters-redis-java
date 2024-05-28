@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -21,7 +22,11 @@ public class Main {
     }
 
     public static Pair parseAsPair(ByteBuffer buffer) {
-        long expiry = buffer.get();
+        Long expiry = null;
+        if (buffer.get() == -4) {
+            expiry = buffer.order(ByteOrder.LITTLE_ENDIAN).getLong();
+            buffer.get();
+        }
         String key = null;
         String value = null;
         int keyLength = buffer.get();
@@ -63,29 +68,35 @@ public class Main {
                                  101, 9, 98, 108, 117, 101, 98, 101, 114, 114, 121, -1, -88, 2, 57,
                                  1, 71, 112, -28, 99, 10};
 
-        System.out.println(Arrays.toString("mango".getBytes()));
-        //        byte[] buf = arr;
-        //        int index = 0;
-        //        while (true) {
-        //            try {
-        //                if (buf[index - 3] == -5
-        //                //                                && buf[index - 1] == 0
-        //                ) {
-        //                    int pairCount = buf[index - 2];
-        //                    ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
-        //                    byteBuffer.position(index);
-        //                    for (int i = 0; i < pairCount; i++) {
-        //                        System.out.println(parseAsPair(byteBuffer));
-        //                    }
-        //
-        //                    break;
-        //
-        //                }
-        //            } catch (Exception e) {
-        //
-        //            }
-        //            index++;
-        //        }
+        System.out.println(Arrays.toString("banana".getBytes()));
+        System.out.println((byte) 0xFC);
+        System.out.println(ByteBuffer.wrap(new byte[] {0, 12, 40, -118, -57, 1, 0, 0})
+                        .order(ByteOrder.LITTLE_ENDIAN).getLong());
+        System.out.println(ByteBuffer.wrap(new byte[] {0, -100, -17, 18, 126, 1, 0, 0})
+                        .order(ByteOrder.LITTLE_ENDIAN).getLong());
+        System.out.println(ByteBuffer.wrap(new byte[] {0, 12, 40, -118, -57, 1, 0, 0})
+                        .order(ByteOrder.LITTLE_ENDIAN).getLong());
+
+        byte[] buf = arr;
+        int index = 0;
+        while (true) {
+            try {
+                if (buf[index - 3] == -5) {
+                    int pairCount = buf[index - 2];
+                    ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
+                    byteBuffer.position(index);
+                    for (int i = 0; i < pairCount; i++) {
+                        System.out.println(parseAsPair(byteBuffer));
+                    }
+
+                    break;
+
+                }
+            } catch (Exception e) {
+
+            }
+            index++;
+        }
 
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");

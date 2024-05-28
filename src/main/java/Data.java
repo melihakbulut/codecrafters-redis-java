@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,6 +16,11 @@ public class Data {
     private Configuration configuration;
 
     public Pair parseAsPair(ByteBuffer buffer) {
+        Long expiry = null;
+        if (buffer.get() == -4) {
+            expiry = buffer.order(ByteOrder.LITTLE_ENDIAN).getLong();
+            buffer.get();
+        }
         String key = null;
         String value = null;
         int keyLength = buffer.get();
@@ -26,7 +32,7 @@ public class Data {
         byte[] valueBuffer = new byte[valueLength];
         buffer.get(valueBuffer, 0, valueLength);
         value = new String(valueBuffer);
-        return Pair.builder().key(key).value(value).build();
+        return Pair.builder().key(key).value(value).expiry(expiry).build();
     }
 
     public Data(Configuration configuration) {
@@ -41,7 +47,7 @@ public class Data {
                 int index = 0;
                 while (true) {
                     try {
-                        if (buf[index - 3] == -5 && buf[index - 1] == 0 && buf[index] == 0) {
+                        if (buf[index - 3] == -5) {
                             int pairCount = buf[index - 2];
                             ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
                             byteBuffer.position(++index);
