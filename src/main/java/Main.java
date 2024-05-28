@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
 public class Main {
@@ -18,42 +19,59 @@ public class Main {
         return sb.toString();
     }
 
+    public static Pair parseAsPair(ByteBuffer buffer) {
+        String key = null;
+        String value = null;
+        int keyLength = buffer.get();
+        byte[] keyBuffer = new byte[keyLength];
+        buffer.get(keyBuffer, 0, keyLength);
+        key = new String(keyBuffer);
+
+        int valueLength = buffer.get();
+        byte[] valueBuffer = new byte[valueLength];
+        buffer.get(valueBuffer, 0, valueLength);
+        value = new String(valueBuffer);
+        return Pair.builder().key(key).value(value).build();
+    }
+
     public static void main(String[] args) {
         //        byte[] arr = new byte[] {82, 69, 68, 73, 83, 48, 48, 48, 51, -6, 10, 114, 101, 100, 105,
         //                                 115, 45, 98, 105, 116, 115, -64, 64, -6, 9, 114, 101, 100, 105,
         //                                 115, 45, 118, 101, 114, 5, 55, 46, 50, 46, 48, -2, 0, -5, 1, 0, 0,
         //                                 9, 112, 105, 110, 101, 97, 112, 112, 108, 101, 4, 112, 101, 97,
         //                                 114, -1, -34, 113, -19, 22, -2, 83, -65, -35, 10};
+
+        //        byte[] arr = new byte[] {82, 69, 68, 73, 83, 48, 48, 48, 51, -6, 9, 114, 101, 100, 105, 115,
+        //                                 45, 118, 101, 114, 5, 55, 46, 50, 46, 48, -6, 10, 114, 101, 100,
+        //                                 105, 115, 45, 98, 105, 116, 115, -64, 64, -2, 0, -5, 5, 0, 0, 4,
+        //                                 112, 101, 97, 114, 9, 112, 105, 110, 101, 97, 112, 112, 108, 101,
+        //                                 0, 9, 112, 105, 110, 101, 97, 112, 112, 108, 101, 4, 112, 101, 97,
+        //                                 114, 0, 5, 103, 114, 97, 112, 101, 5, 109, 97, 110, 103, 111, 0, 5,
+        //                                 97, 112, 112, 108, 101, 6, 98, 97, 110, 97, 110, 97, 0, 5, 109, 97,
+        //                                 110, 103, 111, 10, 115, 116, 114, 97, 119, 98, 101, 114, 114, 121,
+        //                                 -1, 7, 10, -26, 23, 89, 33, -96, 46, 10};
         //
-        //        String key = null;
-        //        String value = null;
         //        byte[] buf = arr;
         //        int index = 0;
         //        while (true) {
         //            try {
-        //                if (buf[index - 3] == -5 && buf[index - 2] == 1 && buf[index - 1] == 0
-        //                    && buf[index] == 0) {
-        //                    int keyLength = buf[++index];
-        //                    byte[] keyBuffer = new byte[keyLength];
-        //                    System.arraycopy(buf, index + 1, keyBuffer, 0, keyLength);
-        //                    key = new String(keyBuffer);
-        //                    index += keyLength;
+        //                if (buf[index - 3] == -5 && buf[index - 1] == 0 && buf[index] == 0) {
+        //                    int pairCount = buf[index - 2];
+        //                    ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
+        //                    byteBuffer.position(++index);
+        //                    for (int i = 0; i < pairCount; i++) {
+        //                        System.out.println(parseAsPair(byteBuffer));
+        //                        byteBuffer.get();
+        //                    }
         //
-        //                    int valueLength = buf[++index];
-        //                    byte[] valueBuffer = new byte[valueLength];
-        //                    System.arraycopy(buf, index + 1, valueBuffer, 0, valueLength);
-        //                    value = new String(valueBuffer);
-        //                    index += valueLength;
         //                    break;
         //
         //                }
         //            } catch (Exception e) {
         //
         //            }
-        //
         //            index++;
         //        }
-        //        System.out.println(key + ":" + value);
 
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");

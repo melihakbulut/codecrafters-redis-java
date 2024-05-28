@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +13,21 @@ import lombok.Getter;
 public class Data {
 
     private Configuration configuration;
+
+    public Pair parseAsPair(ByteBuffer buffer) {
+        String key = null;
+        String value = null;
+        int keyLength = buffer.get();
+        byte[] keyBuffer = new byte[keyLength];
+        buffer.get(keyBuffer, 0, keyLength);
+        key = new String(keyBuffer);
+
+        int valueLength = buffer.get();
+        byte[] valueBuffer = new byte[valueLength];
+        buffer.get(valueBuffer, 0, valueLength);
+        value = new String(valueBuffer);
+        return Pair.builder().key(key).value(value).build();
+    }
 
     public Data(Configuration configuration) {
         this.configuration = configuration;
@@ -27,30 +43,25 @@ public class Data {
                 int index = 0;
                 while (true) {
                     try {
-                        if (buf[index - 3] == -5 && buf[index - 2] == 1 && buf[index - 1] == 0
-                            && buf[index] == 0) {
-                            int keyLength = buf[++index];
-                            byte[] keyBuffer = new byte[keyLength];
-                            System.arraycopy(buf, index + 1, keyBuffer, 0, keyLength);
-                            key = new String(keyBuffer);
-                            index += keyLength;
+                        if (buf[index - 3] == -5 && buf[index - 1] == 0 && buf[index] == 0) {
+                            int pairCount = buf[index - 2];
+                            ByteBuffer byteBuffer = ByteBuffer.wrap(buf);
+                            byteBuffer.position(++index);
+                            for (int i = 0; i < pairCount; i++) {
+                                Pair pair = parseAsPair(byteBuffer);
+                                putMap(pair.getKey(), pair.getValue());
+                                byteBuffer.get();
+                            }
 
-                            int valueLength = buf[++index];
-                            byte[] valueBuffer = new byte[valueLength];
-                            System.arraycopy(buf, index + 1, valueBuffer, 0, valueLength);
-                            value = new String(valueBuffer);
-                            index += valueLength;
                             break;
 
                         }
                     } catch (Exception e) {
 
                     }
-
                     index++;
                 }
 
-                putMap(key, value);
             } catch (IOException e) {
                 e.printStackTrace();
             }
