@@ -124,7 +124,7 @@ public class RedisStream {
                 return o1.getMsIndex().compareTo(o2.getMsIndex());
             }
         });
-
+        System.out.println(xRange);
         return xRange;
     }
 }
