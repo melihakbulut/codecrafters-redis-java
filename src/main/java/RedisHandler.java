@@ -220,7 +220,7 @@ public class RedisHandler implements Runnable {
 
             List<XReadQuery> xReadQueryList = new ArrayList<XReadQuery>();
             int xReadQueryCount = commandWords.length / 2;
-            for (int i = 3; i < xReadQueryCount + 1; i++) {
+            for (int i = 2; i < xReadQueryCount + 1; i++) {
                 xReadQueryList.add(XReadQuery.builder().streamKey(commandWords[i])
                                 .fromMs(commandWords[i + xReadQueryCount - 1]).toMs("+").build());
             }
