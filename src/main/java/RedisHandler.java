@@ -236,6 +236,7 @@ public class RedisHandler implements Runnable {
                                              pair.getValue());
                 }
             }
+            System.out.println(message);
         }
 
         if (!handshakeDone)
