@@ -232,6 +232,7 @@ public class RedisHandler implements Runnable {
                 XRange xRange = redisStream.getBetweenFromMs(xReadQuery.getFromMs(),
                                                              xReadQuery.getToMs());
                 xRange.setStreamKey(xReadQuery.getStreamKey());
+                xRangeResults.add(xRange);
             }
             System.out.println(xRangeResults);
             message = String.format("*%s\r\n*2\r\n", xRangeResults.size());
