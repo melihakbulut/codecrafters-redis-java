@@ -224,7 +224,7 @@ public class RedisHandler implements Runnable {
                 xReadQueryList.add(XReadQuery.builder().streamKey(commandWords[i])
                                 .fromMs(commandWords[i + xReadQueryCount - 1]).toMs("+").build());
             }
-
+            System.out.println(xReadQueryList);
             List<XRange> xRangeResults = new ArrayList<XRange>();
             for (XReadQuery xReadQuery : xReadQueryList) {
                 RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap()
