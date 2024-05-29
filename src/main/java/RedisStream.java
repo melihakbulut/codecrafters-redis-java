@@ -133,7 +133,7 @@ public class RedisStream {
                     else {
                         System.out.println("startTime : " + startTime);
                         System.out.println(entryMsTimeIndexMap);
-                        if (startTime > entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
+                        if (startTime < entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
                             subSetStreamValues.put(streamValuesItem.getKey(),
                                                    streamValuesItem.getValue());
                         }
@@ -146,7 +146,7 @@ public class RedisStream {
                         subSetStreamValues.put(streamValuesItem.getKey(),
                                                streamValuesItem.getValue());
                     else {
-                        if (startTime > entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
+                        if (startTime < entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
                             subSetStreamValues.put(streamValuesItem.getKey(),
                                                    streamValuesItem.getValue());
                         }
