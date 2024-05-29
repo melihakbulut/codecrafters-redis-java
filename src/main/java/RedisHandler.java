@@ -217,30 +217,46 @@ public class RedisHandler implements Runnable {
                 }
             }
         } else if (checkCommand(commandWords, "xread")) {
-            String streamKey = commandWords[2];
-            String fromMs = commandWords[3];
-            String toMs = "+";
-            RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap().get(streamKey);
-            XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
-            message = String.format("*1\r\n*2\r\n$%s\r\n%s\r\n", streamKey.length(), streamKey);
-            message += String.format("*%s\r\n", xRange.getXrangeItems().size());
-            //            message = "*2\r\n";
-            for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
-                message += "*2\r\n";
-                message += String.format("$%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
-                                         xRangeItem.getMsIndex());
-                message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
-                for (Pair pair : xRangeItem.getPairList()) {
-                    message += String.format("$%s\r\n%s\r\n", pair.getKey().length(),
-                                             pair.getKey());
-                    message += String.format("$%s\r\n%s\r\n", pair.getValue().length(),
-                                             pair.getValue());
+
+            List<XReadQuery> xReadQueryList = new ArrayList<XReadQuery>();
+            int xReadQueryCount = commandWords.length / 2;
+            for (int i = 3; i < xReadQueryCount + 1; i++) {
+                xReadQueryList.add(XReadQuery.builder().streamKey(commandWords[i])
+                                .fromMs(commandWords[i + xReadQueryCount - 1]).toMs("+").build());
+            }
+
+            List<XRange> xRangeResults = new ArrayList<XRange>();
+            for (XReadQuery xReadQuery : xReadQueryList) {
+                RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap()
+                                .get(xReadQuery.getStreamKey());
+                XRange xRange = redisStream.getBetweenFromMs(xReadQuery.getFromMs(),
+                                                             xReadQuery.getToMs());
+                xRange.setStreamKey(xReadQuery.getStreamKey());
+            }
+            message = String.format("*%s\r\n*2\r\n", xRangeResults.size());
+            for (XRange xRange : xRangeResults) {
+                message += String.format("$%s\r\n%s\r\n", xRange.getStreamKey().length(),
+                                         xRange.getStreamKey());
+                message += String.format("*%s\r\n", xRange.getXrangeItems().size());
+                //            message = "*2\r\n";
+                for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
+                    message += "*2\r\n";
+                    message += String.format("$%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
+                                             xRangeItem.getMsIndex());
+                    message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
+                    for (Pair pair : xRangeItem.getPairList()) {
+                        message += String.format("$%s\r\n%s\r\n", pair.getKey().length(),
+                                                 pair.getKey());
+                        message += String.format("$%s\r\n%s\r\n", pair.getValue().length(),
+                                                 pair.getValue());
+                    }
                 }
             }
-            System.out.println(message);
         }
+        System.out.println(message);
 
         if (!handshakeDone)
+
             sendMessage(message);
     }
 
