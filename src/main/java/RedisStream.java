@@ -80,19 +80,36 @@ public class RedisStream {
     public XRange getBetweenFromMs(String fromMs, String toMs) throws IllegalArgumentException {
         Map<String, List<Pair>> subSetStreamValues = new ConcurrentHashMap<String, List<Pair>>();
 
+        Long fromMsLong = null;
+        Long toMsLong = null;
+        if (fromMs.contains("-")) {
+            if (fromMs.split("-")[0].equals("0")) {
+                fromMsLong = Long.parseLong(fromMs.split("-")[1]);
+                toMsLong = Long.parseLong(toMs.split("-")[1]);
+            } else {
+                fromMsLong = Long.parseLong(fromMs.replace("-", ""));
+                toMsLong = Long.parseLong(toMs.replace("-", ""));
+            }
+        } else {
+            if (fromMs.equals("0")) {
+                fromMsLong = Long.parseLong(fromMs.split("-")[1]);
+                toMsLong = Long.parseLong(toMs.split("-")[1]);
+            } else {
+                fromMsLong = Long.parseLong(fromMs.replace("-", ""));
+                toMsLong = Long.parseLong(toMs.replace("-", ""));
+            }
+        }
+        System.out.println(String.format("fromMsLong %s, toMsLong %s", fromMsLong, toMsLong));
+
         for (Map.Entry<String, List<Pair>> streamValuesItem : streamValues.entrySet()) {
             if (streamValuesItem.getKey().split("-")[0].equals("0")) {
                 long ms = Long.parseLong(streamValuesItem.getKey().split("-")[1]);
-                long fromMsInt = Long.parseLong(fromMs.split("-")[1]);
-                long toMsInt = Long.parseLong(toMs.split("-")[1]);
-                if (fromMsInt >= ms && ms <= toMsInt) {
+                if (fromMsLong >= ms && ms <= toMsLong) {
                     subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
                 }
             } else {
                 long ms = Long.parseLong(streamValuesItem.getKey().replace("-", ""));
-                long fromMsInt = Long.parseLong(fromMs.replace("-", ""));
-                long toMsInt = Long.parseLong(toMs.replace("-", ""));
-                if (fromMsInt >= ms && ms <= toMsInt) {
+                if (fromMsLong >= ms && ms <= toMsLong) {
                     subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
                 }
             }
