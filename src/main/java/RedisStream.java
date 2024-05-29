@@ -84,7 +84,7 @@ public class RedisStream {
         Long toMsLong = null;
         boolean fromBeginning = fromMs.equals("-");
 
-        if (fromMs.contains("-") && fromBeginning) {
+        if (fromMs.contains("-") && !fromBeginning) {
             if (fromMs.split("-")[0].equals("0")) {
                 fromMsLong = Long.parseLong(fromMs.split("-")[1]);
                 toMsLong = Long.parseLong(toMs.split("-")[1]);
