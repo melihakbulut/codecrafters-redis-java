@@ -266,10 +266,9 @@ public class RedisHandler implements Runnable {
                 }
             }
         }
-        System.out.println(message);
+        //        System.out.println(message);
 
         if (!handshakeDone)
-
             sendMessage(message);
     }
 
