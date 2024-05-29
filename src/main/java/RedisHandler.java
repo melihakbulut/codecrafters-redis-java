@@ -189,9 +189,7 @@ public class RedisHandler implements Runnable {
                 }
 
                 String id = commandWords[2];
-                String key = commandWords[3];
-                String value = commandWords[4];
-                String lastId = redisStream.putMap(id, key, value);
+                String lastId = redisStream.putMap(id, commandWords);
                 Main.getData().getKeyValueMap().put(streamKey, redisStream);
                 message = String.format("$%s\r\n%s\r\n", lastId.length(), lastId);
             } catch (IllegalArgumentException e) {
@@ -203,7 +201,18 @@ public class RedisHandler implements Runnable {
             String fromMs = commandWords[2];
             String toMs = commandWords[3];
             RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap().get(streamKey);
-            redisStream.getBetweenFromMs(fromMs, toMs);
+            XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
+            message = String.format("*%s\r\n*2\r\n", xRange.getXrangeItems().size());
+            for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
+                message += String.format("%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
+                                         xRangeItem.getMsIndex());
+                message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
+                for (Pair pair : xRangeItem.getPairList()) {
+                    message += String.format("%s\r\n%s\r\n", pair.getKey().length(), pair.getKey());
+                    message += String.format("%s\r\n%s\r\n", pair.getValue().length(),
+                                             pair.getValue());
+                }
+            }
         }
 
         if (!handshakeDone)

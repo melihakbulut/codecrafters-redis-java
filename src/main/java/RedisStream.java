@@ -1,3 +1,5 @@
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,9 +10,9 @@ public class RedisStream {
     //time,id
     private Map<Long, List<Long>> stream = new ConcurrentHashMap<Long, List<Long>>();
     //time+index, Pair
-    private Map<String, Pair> streamValues = new ConcurrentHashMap<String, Pair>();
+    private Map<String, List<Pair>> streamValues = new ConcurrentHashMap<String, List<Pair>>();
 
-    public String putMap(String id, String key, String value) throws IllegalArgumentException {
+    public String putMap(String id, String[] keyValues) throws IllegalArgumentException {
         if (id.equals("0-0")) {
             throw new IllegalArgumentException(
                             "ERR The ID specified in XADD must be greater than 0-0");
@@ -60,12 +62,52 @@ public class RedisStream {
         Long nextIndex = lastIndex;
         indexes.add(nextIndex);
         stream.put(ms, indexes);
-        streamValues.put(ms + "-" + nextIndex, Pair.builder().key(key).value(value).build());
-        return ms + "-" + nextIndex;
+        String msIndex = ms + "-" + nextIndex;
+        List<Pair> pairList = streamValues.get(msIndex);
+        if (pairList == null) {
+            pairList = new CopyOnWriteArrayList<Pair>();
+        }
+
+        for (int i = 3; i < keyValues.length; i += 2) {
+            pairList.add(Pair.builder().key(keyValues[i]).value(keyValues[i + 1]).build());
+        }
+
+        streamValues.put(msIndex, pairList);
+        return msIndex;
 
     }
 
-    public List<Pair> getBetweenFromMs(String fromMs, String toMs) throws IllegalArgumentException {
-        return null;
+    public XRange getBetweenFromMs(String fromMs, String toMs) throws IllegalArgumentException {
+        Map<String, List<Pair>> subSetStreamValues = new ConcurrentHashMap<String, List<Pair>>();
+
+        for (Map.Entry<String, List<Pair>> streamValuesItem : streamValues.entrySet()) {
+            if (streamValuesItem.getKey().split("-")[0].equals("0")) {
+                long ms = Long.parseLong(streamValuesItem.getKey().split("-")[1]);
+                long fromMsInt = Long.parseLong(fromMs.split("-")[1]);
+                long toMsInt = Long.parseLong(toMs.split("-")[1]);
+                if (fromMsInt >= ms && ms <= toMsInt) {
+                    subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
+                }
+            } else {
+                long ms = Long.parseLong(streamValuesItem.getKey().replace("-", ""));
+                long fromMsInt = Long.parseLong(fromMs.replace("-", ""));
+                long toMsInt = Long.parseLong(toMs.replace("-", ""));
+                if (fromMsInt >= ms && ms <= toMsInt) {
+                    subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
+                }
+            }
+        }
+        XRange xRange = new XRange();
+        subSetStreamValues.forEach((k, v) -> xRange.getXrangeItems()
+                        .add(new XRange.XRangeItem(k, v)));
+
+        Collections.sort(xRange.getXrangeItems(), new Comparator<XRange.XRangeItem>() {
+            @Override
+            public int compare(XRange.XRangeItem o1, XRange.XRangeItem o2) {
+                return o1.getMsIndex().compareTo(o2.getMsIndex());
+            }
+        });
+
+        return xRange;
     }
 }
