@@ -104,7 +104,7 @@ public class RedisStream {
         for (Map.Entry<String, List<Pair>> streamValuesItem : streamValues.entrySet()) {
             if (streamValuesItem.getKey().split("-")[0].equals("0")) {
                 long ms = Long.parseLong(streamValuesItem.getKey().split("-")[1]);
-                if (fromMsLong >= ms && ms <= toMsLong) {
+                if (ms >= fromMsLong && ms <= toMsLong) {
                     subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
                 }
             } else {
