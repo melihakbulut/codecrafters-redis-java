@@ -122,6 +122,7 @@ public class RedisStream {
                         subSetStreamValues.put(streamValuesItem.getKey(),
                                                streamValuesItem.getValue());
                     else {
+                        System.out.println("maxWait : " + maxWait);
                         if (maxWait > entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
                             subSetStreamValues.put(streamValuesItem.getKey(),
                                                    streamValuesItem.getValue());
