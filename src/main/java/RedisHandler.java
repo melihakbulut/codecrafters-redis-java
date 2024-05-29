@@ -221,12 +221,6 @@ public class RedisHandler implements Runnable {
             Long blockMs = null;
             if (blockExists) {
                 blockMs = Long.parseLong(commandWords[2]);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
             }
 
             int blockValue = blockExists ? 2 : 0;

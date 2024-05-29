@@ -90,7 +90,7 @@ public class RedisStream {
         Long maxWait = System.currentTimeMillis() + blockMs;
         if (blockMs != null) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(blockMs);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
