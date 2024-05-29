@@ -222,7 +222,7 @@ public class RedisHandler implements Runnable {
             String toMs = "+";
             RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap().get(streamKey);
             XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
-            message += String.format("*1\r\n*2\r\n$%s\r\n%s\r\n", streamKey.length(), streamKey);
+            message = String.format("*1\r\n*2\r\n$%s\r\n%s\r\n", streamKey.length(), streamKey);
             message += String.format("*%s\r\n", xRange.getXrangeItems().size());
             //            message = "*2\r\n";
             for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
