@@ -218,11 +218,13 @@ public class RedisHandler implements Runnable {
             }
         } else if (checkCommand(commandWords, "xread")) {
             boolean blockExists = checkCommand(commandWords, "block", 1);
-
+            Long blockMs = null;
             if (blockExists) {
+                blockMs = Long.parseLong(commandWords[2]);
                 try {
-                    Thread.sleep(Integer.parseInt(commandWords[2]));
-                } catch (NumberFormatException | InterruptedException e) {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -241,7 +243,7 @@ public class RedisHandler implements Runnable {
                 RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap()
                                 .get(xReadQuery.getStreamKey());
                 XRange xRange = redisStream.getBetweenFromMs(xReadQuery.getFromMs(),
-                                                             xReadQuery.getToMs());
+                                                             xReadQuery.getToMs(), blockMs);
                 xRange.setStreamKey(xReadQuery.getStreamKey());
                 xRangeResults.add(xRange);
             }

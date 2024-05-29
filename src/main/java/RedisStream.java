@@ -11,6 +11,8 @@ public class RedisStream {
     private Map<Long, List<Long>> stream = new ConcurrentHashMap<Long, List<Long>>();
     //time+index, Pair
     private Map<String, List<Pair>> streamValues = new ConcurrentHashMap<String, List<Pair>>();
+    //entryCurrentTimeMs, time+index
+    private Map<String, Long> entryMsTimeIndexMap = new ConcurrentHashMap<String, Long>();
 
     public String putMap(String id, String[] keyValues) throws IllegalArgumentException {
         if (id.equals("0-0")) {
@@ -73,11 +75,19 @@ public class RedisStream {
         }
 
         streamValues.put(msIndex, pairList);
+        entryMsTimeIndexMap.put(msIndex, System.currentTimeMillis());
         return msIndex;
 
     }
 
     public XRange getBetweenFromMs(String fromMs, String toMs) throws IllegalArgumentException {
+        return getBetweenFromMs(fromMs, toMs, null);
+    }
+
+    public XRange getBetweenFromMs(String fromMs,
+                                   String toMs,
+                                   Long blockMs) throws IllegalArgumentException {
+        Long maxWait = System.currentTimeMillis() + blockMs;
         Map<String, List<Pair>> subSetStreamValues = new ConcurrentHashMap<String, List<Pair>>();
 
         Long fromMsLong = null;
@@ -108,12 +118,28 @@ public class RedisStream {
             if (streamValuesItem.getKey().split("-")[0].equals("0")) {
                 long ms = Long.parseLong(streamValuesItem.getKey().split("-")[1]);
                 if (ms >= fromMsLong && (toEnd || ms <= toMsLong)) {
-                    subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
+                    if (blockMs == null)
+                        subSetStreamValues.put(streamValuesItem.getKey(),
+                                               streamValuesItem.getValue());
+                    else {
+                        if (maxWait > entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
+                            subSetStreamValues.put(streamValuesItem.getKey(),
+                                                   streamValuesItem.getValue());
+                        }
+                    }
                 }
             } else {
                 long ms = Long.parseLong(streamValuesItem.getKey().replace("-", ""));
                 if (fromMsLong >= ms && (toEnd || ms <= toMsLong)) {
-                    subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
+                    if (blockMs == null)
+                        subSetStreamValues.put(streamValuesItem.getKey(),
+                                               streamValuesItem.getValue());
+                    else {
+                        if (maxWait > entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
+                            subSetStreamValues.put(streamValuesItem.getKey(),
+                                                   streamValuesItem.getValue());
+                        }
+                    }
                 }
             }
         }
