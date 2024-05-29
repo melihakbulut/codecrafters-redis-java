@@ -235,9 +235,9 @@ public class RedisHandler implements Runnable {
                 xRangeResults.add(xRange);
             }
             System.out.println(xRangeResults);
-            message = String.format("*%s\r\n*2\r\n", xRangeResults.size());
+            message = String.format("*%s\r\n", xRangeResults.size());
             for (XRange xRange : xRangeResults) {
-                message += String.format("$%s\r\n%s\r\n", xRange.getStreamKey().length(),
+                message += String.format("*2\r\n$%s\r\n%s\r\n", xRange.getStreamKey().length(),
                                          xRange.getStreamKey());
                 message += String.format("*%s\r\n", xRange.getXrangeItems().size());
                 //            message = "*2\r\n";
