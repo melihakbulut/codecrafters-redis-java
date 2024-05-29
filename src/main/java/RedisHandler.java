@@ -217,10 +217,21 @@ public class RedisHandler implements Runnable {
                 }
             }
         } else if (checkCommand(commandWords, "xread")) {
+            boolean blockExists = checkCommand(commandWords, "block", 1);
+
+            if (blockExists) {
+                try {
+                    Thread.sleep(Integer.parseInt(commandWords[2]));
+                } catch (NumberFormatException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            int blockValue = blockExists ? 2 : 0;
 
             List<XReadQuery> xReadQueryList = new ArrayList<XReadQuery>();
-            int xReadQueryCount = commandWords.length / 2;
-            for (int i = 2; i < xReadQueryCount + 1; i++) {
+            int xReadQueryCount = (commandWords.length - blockValue) / 2;
+            for (int i = 2 + blockValue; i < xReadQueryCount + 1; i++) {
                 xReadQueryList.add(XReadQuery.builder().streamKey(commandWords[i])
                                 .fromMs(commandWords[i + xReadQueryCount - 1]).toMs("+").build());
             }
