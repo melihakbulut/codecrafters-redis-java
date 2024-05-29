@@ -216,6 +216,26 @@ public class RedisHandler implements Runnable {
                                              pair.getValue());
                 }
             }
+        } else if (checkCommand(commandWords, "xread")) {
+            String streamKey = commandWords[3];
+            String fromMs = commandWords[4];
+            String toMs = commandWords[4];
+            RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap().get(streamKey);
+            XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
+            message = String.format("*%s\r\n", xRange.getXrangeItems().size());
+            //            message = "*2\r\n";
+            for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
+                message += "*2\r\n";
+                message += String.format("$%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
+                                         xRangeItem.getMsIndex());
+                message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
+                for (Pair pair : xRangeItem.getPairList()) {
+                    message += String.format("$%s\r\n%s\r\n", pair.getKey().length(),
+                                             pair.getKey());
+                    message += String.format("$%s\r\n%s\r\n", pair.getValue().length(),
+                                             pair.getValue());
+                }
+            }
         }
 
         if (!handshakeDone)
