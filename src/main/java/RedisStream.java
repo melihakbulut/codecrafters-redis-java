@@ -87,7 +87,7 @@ public class RedisStream {
     public XRange getBetweenFromMs(String fromMs,
                                    String toMs,
                                    Long blockMs) throws IllegalArgumentException {
-        Long maxWait = System.currentTimeMillis() + blockMs;
+        Long startTime = System.currentTimeMillis();
         if (blockMs != null) {
             try {
                 Thread.sleep(blockMs);
@@ -131,9 +131,9 @@ public class RedisStream {
                         subSetStreamValues.put(streamValuesItem.getKey(),
                                                streamValuesItem.getValue());
                     else {
-                        System.out.println("maxWait : " + maxWait);
+                        System.out.println("startTime : " + startTime);
                         System.out.println(entryMsTimeIndexMap);
-                        if (maxWait > entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
+                        if (startTime > entryMsTimeIndexMap.get(streamValuesItem.getKey())) {
                             subSetStreamValues.put(streamValuesItem.getKey(),
                                                    streamValuesItem.getValue());
                         }
