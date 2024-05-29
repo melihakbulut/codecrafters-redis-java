@@ -204,12 +204,13 @@ public class RedisHandler implements Runnable {
             XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
             message = String.format("*%s\r\n*2\r\n", xRange.getXrangeItems().size());
             for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
-                message += String.format("%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
+                message += String.format("$%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
                                          xRangeItem.getMsIndex());
-                message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
+                message += String.format("*$%s\r\n", xRangeItem.getPairList().size() * 2);
                 for (Pair pair : xRangeItem.getPairList()) {
-                    message += String.format("%s\r\n%s\r\n", pair.getKey().length(), pair.getKey());
-                    message += String.format("%s\r\n%s\r\n", pair.getValue().length(),
+                    message += String.format("$%s\r\n%s\r\n", pair.getKey().length(),
+                                             pair.getKey());
+                    message += String.format("$%s\r\n%s\r\n", pair.getValue().length(),
                                              pair.getValue());
                 }
             }
