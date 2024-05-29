@@ -202,8 +202,9 @@ public class RedisHandler implements Runnable {
             String toMs = commandWords[3];
             RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap().get(streamKey);
             XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
-            message = String.format("*%s\r\n*2\r\n", xRange.getXrangeItems().size());
+            message = String.format("*%2\r\n", xRange.getXrangeItems().size());
             for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
+                message += "*2\r\n";
                 message += String.format("$%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
                                          xRangeItem.getMsIndex());
                 message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
