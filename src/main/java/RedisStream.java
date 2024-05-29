@@ -83,8 +83,9 @@ public class RedisStream {
         Long fromMsLong = null;
         Long toMsLong = null;
         boolean fromBeginning = fromMs.equals("-");
+        boolean toEnd = toMs.equals("+");
 
-        if (fromMs.contains("-") && !fromBeginning) {
+        if (fromMs.contains("-") && !fromBeginning && !toEnd) {
             if (fromMs.split("-")[0].equals("0")) {
                 fromMsLong = Long.parseLong(fromMs.split("-")[1]);
                 toMsLong = Long.parseLong(toMs.split("-")[1]);
@@ -95,10 +96,10 @@ public class RedisStream {
         } else {
             if (fromMs.equals("0")) {
                 fromMsLong = Long.parseLong(fromMs.split("-")[1]);
-                toMsLong = Long.parseLong(toMs.split("-")[1]);
+                toMsLong = toEnd ? 0 : Long.parseLong(toMs.split("-")[1]);
             } else {
                 fromMsLong = fromBeginning ? -1 : Long.parseLong(fromMs.replace("-", ""));
-                toMsLong = Long.parseLong(toMs.replace("-", ""));
+                toMsLong = toEnd ? 0 : Long.parseLong(toMs.replace("-", ""));
             }
         }
         System.out.println(String.format("fromMsLong %s, toMsLong %s", fromMsLong, toMsLong));
@@ -106,12 +107,12 @@ public class RedisStream {
         for (Map.Entry<String, List<Pair>> streamValuesItem : streamValues.entrySet()) {
             if (streamValuesItem.getKey().split("-")[0].equals("0")) {
                 long ms = Long.parseLong(streamValuesItem.getKey().split("-")[1]);
-                if (ms >= fromMsLong && ms <= toMsLong) {
+                if (ms >= fromMsLong && (toEnd || ms <= toMsLong)) {
                     subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
                 }
             } else {
                 long ms = Long.parseLong(streamValuesItem.getKey().replace("-", ""));
-                if (fromMsLong >= ms && ms <= toMsLong) {
+                if (fromMsLong >= ms && (toEnd || ms <= toMsLong)) {
                     subSetStreamValues.put(streamValuesItem.getKey(), streamValuesItem.getValue());
                 }
             }
