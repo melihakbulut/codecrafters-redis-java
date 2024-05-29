@@ -217,9 +217,9 @@ public class RedisHandler implements Runnable {
                 }
             }
         } else if (checkCommand(commandWords, "xread")) {
-            String streamKey = commandWords[3];
-            String fromMs = commandWords[4];
-            String toMs = commandWords[4];
+            String streamKey = commandWords[2];
+            String fromMs = commandWords[3];
+            String toMs = commandWords[3];
             RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap().get(streamKey);
             XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
             message = String.format("*%s\r\n", xRange.getXrangeItems().size());
