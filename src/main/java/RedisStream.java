@@ -84,7 +84,7 @@ public class RedisStream {
         Long toMsLong = null;
         boolean fromBeginning = fromMs.equals("-");
 
-        if (fromMs.contains("-") && !fromBeginning) {
+        if (fromMs.contains("-") && fromBeginning) {
             if (fromMs.split("-")[0].equals("0")) {
                 fromMsLong = Long.parseLong(fromMs.split("-")[1]);
                 toMsLong = Long.parseLong(toMs.split("-")[1]);
@@ -97,8 +97,8 @@ public class RedisStream {
                 fromMsLong = Long.parseLong(fromMs.split("-")[1]);
                 toMsLong = Long.parseLong(toMs.split("-")[1]);
             } else {
-                fromMsLong = fromBeginning ? -1l : Long.parseLong(fromMs.replace("-", ""));
-                toMsLong = fromBeginning ? -1l : Long.parseLong(toMs.replace("-", ""));
+                fromMsLong = fromBeginning ? -1 : Long.parseLong(fromMs.replace("-", ""));
+                toMsLong = Long.parseLong(toMs.replace("-", ""));
             }
         }
         System.out.println(String.format("fromMsLong %s, toMsLong %s", fromMsLong, toMsLong));
