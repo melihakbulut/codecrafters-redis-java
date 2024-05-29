@@ -88,6 +88,14 @@ public class RedisStream {
                                    String toMs,
                                    Long blockMs) throws IllegalArgumentException {
         Long maxWait = System.currentTimeMillis() + blockMs;
+        if (blockMs != null) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         Map<String, List<Pair>> subSetStreamValues = new ConcurrentHashMap<String, List<Pair>>();
 
         Long fromMsLong = null;
