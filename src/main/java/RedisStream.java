@@ -23,6 +23,7 @@ public class RedisStream {
         String[] idArr = id.split("-");
         boolean autoIncWhole = idArr[0].equals("*");
         Long ms = null;
+
         if (autoIncWhole)
             ms = System.currentTimeMillis();
         else
