@@ -13,6 +13,7 @@ public class RedisStream {
     private Map<String, List<Pair>> streamValues = new ConcurrentHashMap<String, List<Pair>>();
     //entryCurrentTimeMs, time+index
     private Map<String, Long> entryMsTimeIndexMap = new ConcurrentHashMap<String, Long>();
+    private String lastMsIndex;
 
     public String putMap(String id, String[] keyValues) throws IllegalArgumentException {
         if (id.equals("0-0")) {
@@ -76,6 +77,7 @@ public class RedisStream {
 
         streamValues.put(msIndex, pairList);
         entryMsTimeIndexMap.put(msIndex, System.currentTimeMillis());
+        lastMsIndex = msIndex;
         return msIndex;
 
     }
@@ -87,6 +89,9 @@ public class RedisStream {
     public XRange getBetweenFromMs(String fromMs,
                                    String toMs,
                                    Long blockMs) throws IllegalArgumentException {
+
+        if (fromMs.equals("$"))
+            fromMs = lastMsIndex;
 
         Long startTime = System.currentTimeMillis();
         boolean waitUntilEntry = false;
@@ -108,6 +113,7 @@ public class RedisStream {
                 if (!(waitUntilEntry && xRange.getXrangeItems().isEmpty())) {
                     break;
                 }
+                Thread.sleep(50);
             } catch (Exception e) {
                 // TODO: handle exception
             }
