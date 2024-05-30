@@ -244,7 +244,7 @@ public class RedisHandler implements Runnable {
             System.out.println(xRangeResults);
             boolean anyData = false;
             for (XRange xRange : xRangeResults) {
-                if (!xRange.getXrangeItems().isEmpty() && blockExists) {
+                if (!xRange.getXrangeItems().isEmpty()) {
                     anyData = true;
                     break;
                 }
