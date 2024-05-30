@@ -250,7 +250,8 @@ public class RedisHandler implements Runnable {
                 }
             }
             if (!anyData) {
-                message = "-nil\r\n";
+                //                message = "--\r\n";
+                message = notFound;
             } else {
                 message = String.format("*%s\r\n", xRangeResults.size());
                 for (XRange xRange : xRangeResults) {
