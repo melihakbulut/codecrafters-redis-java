@@ -242,22 +242,26 @@ public class RedisHandler implements Runnable {
                 xRangeResults.add(xRange);
             }
             System.out.println(xRangeResults);
-            message = String.format("*%s\r\n", xRangeResults.size());
-            for (XRange xRange : xRangeResults) {
-                message += String.format("*2\r\n$%s\r\n%s\r\n", xRange.getStreamKey().length(),
-                                         xRange.getStreamKey());
-                message += String.format("*%s\r\n", xRange.getXrangeItems().size());
-                //            message = "*2\r\n";
-                for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
-                    message += "*2\r\n";
-                    message += String.format("$%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
-                                             xRangeItem.getMsIndex());
-                    message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
-                    for (Pair pair : xRangeItem.getPairList()) {
-                        message += String.format("$%s\r\n%s\r\n", pair.getKey().length(),
-                                                 pair.getKey());
-                        message += String.format("$%s\r\n%s\r\n", pair.getValue().length(),
-                                                 pair.getValue());
+            if (xRangeResults.isEmpty() && blockExists) {
+                message = "_\r\n";
+            } else {
+                message = String.format("*%s\r\n", xRangeResults.size());
+                for (XRange xRange : xRangeResults) {
+                    message += String.format("*2\r\n$%s\r\n%s\r\n", xRange.getStreamKey().length(),
+                                             xRange.getStreamKey());
+                    message += String.format("*%s\r\n", xRange.getXrangeItems().size());
+                    //            message = "*2\r\n";
+                    for (XRange.XRangeItem xRangeItem : xRange.getXrangeItems()) {
+                        message += "*2\r\n";
+                        message += String.format("$%s\r\n%s\r\n", xRangeItem.getMsIndex().length(),
+                                                 xRangeItem.getMsIndex());
+                        message += String.format("*%s\r\n", xRangeItem.getPairList().size() * 2);
+                        for (Pair pair : xRangeItem.getPairList()) {
+                            message += String.format("$%s\r\n%s\r\n", pair.getKey().length(),
+                                                     pair.getKey());
+                            message += String.format("$%s\r\n%s\r\n", pair.getValue().length(),
+                                                     pair.getValue());
+                        }
                     }
                 }
             }
