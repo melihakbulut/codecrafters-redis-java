@@ -242,7 +242,14 @@ public class RedisHandler implements Runnable {
                 xRangeResults.add(xRange);
             }
             System.out.println(xRangeResults);
-            if (xRangeResults.isEmpty() && blockExists) {
+            boolean anyData = false;
+            for (XRange xRange : xRangeResults) {
+                if (!xRange.getXrangeItems().isEmpty() && blockExists) {
+                    anyData = true;
+                    break;
+                }
+            }
+            if (!anyData) {
                 message = "_\r\n";
             } else {
                 message = String.format("*%s\r\n", xRangeResults.size());
