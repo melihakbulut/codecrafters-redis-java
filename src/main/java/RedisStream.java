@@ -87,14 +87,39 @@ public class RedisStream {
     public XRange getBetweenFromMs(String fromMs,
                                    String toMs,
                                    Long blockMs) throws IllegalArgumentException {
+
         Long startTime = System.currentTimeMillis();
+        boolean waitUntilEntry = false;
         if (blockMs != null) {
+            if (blockMs == 0) {
+                waitUntilEntry = true;
+                blockMs = 50l;
+            }
             try {
                 Thread.sleep(blockMs);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        XRange xRange = null;
+        while (true) {
+            try {
+                xRange = getBetweenFromMs0(fromMs, toMs, blockMs, startTime);
+                if (!(waitUntilEntry && xRange.getXrangeItems().isEmpty())) {
+                    break;
+                }
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+
+        return xRange;
+    }
+
+    private XRange getBetweenFromMs0(String fromMs,
+                                     String toMs,
+                                     Long blockMs,
+                                     Long startTime) throws IllegalArgumentException {
 
         Map<String, List<Pair>> subSetStreamValues = new ConcurrentHashMap<String, List<Pair>>();
 
