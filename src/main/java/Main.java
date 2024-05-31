@@ -2,7 +2,19 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+
+import org.reflections.Reflections;
+
+import com.redis.Command;
+import com.redis.Configuration;
+import com.redis.Data;
+import com.redis.Pair;
+import com.redis.RedisHandler;
+import com.redis.Replication;
 
 public class Main {
 
@@ -39,7 +51,27 @@ public class Main {
         return Pair.builder().key(key).value(value).expiry(expiry).build();
     }
 
+    private static void registerCommands() {
+        Reflections reflections = new Reflections("com.redis");
+
+        //        Set<Method> methods = reflections
+        //          .getMethodsAnnotatedWith(Command.class);
+        //        List<String> annotatedMethods = methods.stream()
+        //          .map(method -> method.getAnnotation(Command.class)
+        //          .value())
+        //          .collect(Collectors.toList());
+
+        Set<Class<?>> types = reflections.getTypesAnnotatedWith(Command.class);
+        Map<String, Class<?>> commandMap = new HashMap<String, Class<?>>();
+        for (Class<?> type : types) {
+            commandMap.put(type.getAnnotation(Command.class).value(), type);
+        }
+
+        System.out.println(commandMap);
+    }
+
     public static void main(String[] args) {
+        registerCommands();
 
         //        byte[] arr = new byte[] {82, 69, 68, 73, 83, 48, 48, 48, 51, -6, 10, 114, 101, 100, 105,
         //                                 115, 45, 98, 105, 116, 115, -64, 64, -6, 9, 114, 101, 100, 105,
@@ -116,9 +148,7 @@ public class Main {
                 dbFileName = args[i + 1];
             }
         }
-        Configuration configuration = Configuration.builder().replicaOf(replicaOf).port(port)
-                        .dir(dir).dbFileName(dbFileName).build();
-        data = new Data(configuration);
+        Configuration configuration = new Configuration(replicaOf, port, dir, dbFileName);
         String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
         Replication replication = new Replication(configuration, role);
 
@@ -131,7 +161,7 @@ public class Main {
             while (true) {
                 // Wait for connection from client.
                 clientSocket = serverSocket.accept();
-                new Thread(new RedisHandler(clientSocket, configuration, replication)).start();
+                new Thread(new RedisHandler(clientSocket, replication)).start();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
