@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @Builder
-public class Configuration {
+public class ConfigurationArgs {
 
     private String replicaOf;
     private Integer port;

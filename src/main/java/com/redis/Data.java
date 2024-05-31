@@ -45,8 +45,8 @@ public class Data {
     }
 
     public Data() {
-        File dbFile = new File(Configuration.getInstance().getDir() + "/"
-                               + Configuration.getInstance().getDbFileName());
+        File dbFile = new File(Main.getConfiguration().getDir() + "/"
+                               + Main.getConfiguration().getDbFileName());
         if (dbFile.exists()) {
             System.out.println(dbFile.getAbsolutePath() + " file exists");
             try {

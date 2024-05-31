@@ -1,3 +1,4 @@
+package com.redis;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,17 +12,16 @@ import org.reflections.Reflections;
 
 import com.redis.Command;
 import com.redis.Configuration;
-import com.redis.Data;
 import com.redis.Pair;
 import com.redis.RedisHandler;
 import com.redis.Replication;
 
 public class Main {
 
-    private static Data data;
+    private static Configuration configuration;
 
-    public static Data getData() {
-        return data;
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     public static String byteArrayToHex(byte[] a) {
@@ -148,7 +148,9 @@ public class Main {
                 dbFileName = args[i + 1];
             }
         }
-        Configuration configuration = new Configuration(replicaOf, port, dir, dbFileName);
+        configuration = Configuration.builder().replicaOf(replicaOf).port(port).dir(dir)
+                        .dbFileName(dbFileName).build();
+
         String role = Objects.nonNull(configuration.getReplicaOf()) ? "slave" : "master";
         Replication replication = new Replication(configuration, role);
 
