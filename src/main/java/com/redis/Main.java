@@ -1,4 +1,5 @@
 package com.redis;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,17 +11,11 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
-import com.redis.Command;
-import com.redis.Configuration;
-import com.redis.Pair;
-import com.redis.RedisHandler;
-import com.redis.Replication;
-
 public class Main {
 
     private static Configuration configuration;
 
-    public Configuration getConfiguration() {
+    public static Configuration getConfiguration() {
         return configuration;
     }
 
