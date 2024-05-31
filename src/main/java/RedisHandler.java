@@ -1,5 +1,3 @@
-package com.redis;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -29,8 +27,9 @@ public class RedisHandler implements Runnable {
 
     private static AtomicInteger ackCount = new AtomicInteger(0);
 
-    public RedisHandler(Socket clientSocket, Replication replication) {
+    public RedisHandler(Socket clientSocket, Configuration configuration, Replication replication) {
         this.clientSocket = clientSocket;
+        this.configuration = configuration;
         this.replication = replication;
     }
 
@@ -88,10 +87,10 @@ public class RedisHandler implements Runnable {
 
         } else if (checkCommand(commandWords, "set")) {
             if (commandWords.length > 3)
-                Data.getData().putMap(commandWords[1], commandWords[2],
+                Main.getData().putMap(commandWords[1], commandWords[2],
                                       Long.parseLong(commandWords[4]));
             else
-                Data.getData().putMap(commandWords[1], commandWords[2]);
+                Main.getData().putMap(commandWords[1], commandWords[2]);
 
             message = "+OK\r\n";
 
@@ -110,7 +109,7 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "get")) {
             try {
 
-                String value = Data.getData().getFromMap(commandWords[1]).toString();
+                String value = Main.getData().getFromMap(commandWords[1]).toString();
                 message = String.format("$%s\r\n%s\r\n", value.length(), value);
             } catch (Exception e) {
                 message = notFound;
@@ -167,13 +166,13 @@ public class RedisHandler implements Runnable {
                                         configuration.getDbFileName().length(),
                                         configuration.getDbFileName());
         } else if (checkCommand(commandWords, "keys")) {
-            message = String.format("*%s\r\n", Data.getData().getKeyValueMap().keySet().size());
-            for (String key : Data.getData().getKeyValueMap().keySet()) {
+            message = String.format("*%s\r\n", Main.getData().getKeyValueMap().keySet().size());
+            for (String key : Main.getData().getKeyValueMap().keySet()) {
                 message += String.format("$%s\r\n%s\r\n", key.length(), key);
             }
         } else if (checkCommand(commandWords, "type")) {
             String key = commandWords[1];
-            Object value = Data.getData().getKeyValueMap().get(key);
+            Object value = Main.getData().getKeyValueMap().get(key);
             if (value == null)
                 message = "+none\r\n";
             else if (value instanceof RedisStream)
@@ -183,7 +182,7 @@ public class RedisHandler implements Runnable {
         } else if (checkCommand(commandWords, "xadd")) {
             try {
                 String streamKey = commandWords[1];
-                RedisStream redisStream = (RedisStream) Data.getData().getKeyValueMap()
+                RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap()
                                 .get(streamKey);
                 if (redisStream == null) {
                     redisStream = new RedisStream();
@@ -191,7 +190,7 @@ public class RedisHandler implements Runnable {
 
                 String id = commandWords[2];
                 String lastId = redisStream.putMap(id, commandWords);
-                Data.getData().getKeyValueMap().put(streamKey, redisStream);
+                Main.getData().getKeyValueMap().put(streamKey, redisStream);
                 message = String.format("$%s\r\n%s\r\n", lastId.length(), lastId);
             } catch (IllegalArgumentException e) {
                 message = String.format("-%s\r\n", e.getMessage());
@@ -201,7 +200,7 @@ public class RedisHandler implements Runnable {
             String streamKey = commandWords[1];
             String fromMs = commandWords[2];
             String toMs = commandWords[3];
-            RedisStream redisStream = (RedisStream) Data.getData().getKeyValueMap().get(streamKey);
+            RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap().get(streamKey);
             XRange xRange = redisStream.getBetweenFromMs(fromMs, toMs);
             message = String.format("*%s\r\n", xRange.getXrangeItems().size());
             //            message = "*2\r\n";
@@ -235,7 +234,7 @@ public class RedisHandler implements Runnable {
             System.out.println(xReadQueryList);
             List<XRange> xRangeResults = new ArrayList<XRange>();
             for (XReadQuery xReadQuery : xReadQueryList) {
-                RedisStream redisStream = (RedisStream) Data.getData().getKeyValueMap()
+                RedisStream redisStream = (RedisStream) Main.getData().getKeyValueMap()
                                 .get(xReadQuery.getStreamKey());
                 XRange xRange = redisStream.getBetweenFromMs(xReadQuery.getFromMs(),
                                                              xReadQuery.getToMs(), blockMs);

@@ -1,4 +1,3 @@
-package com.redis;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;

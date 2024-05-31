@@ -1,5 +1,3 @@
-package com.redis;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -15,14 +13,7 @@ import lombok.Getter;
 @Getter
 public class Data {
 
-    private static Data data;
-
-    public static Data getData() {
-        if (data == null) {
-            data = new Data();
-        }
-        return data;
-    }
+    private Configuration configuration;
 
     public Pair parseAsPair(ByteBuffer buffer) {
         Long expiry = null;
@@ -44,9 +35,9 @@ public class Data {
         return Pair.builder().key(key).value(value).expiry(expiry).build();
     }
 
-    public Data() {
-        File dbFile = new File(Main.getConfiguration().getDir() + "/"
-                               + Main.getConfiguration().getDbFileName());
+    public Data(Configuration configuration) {
+        this.configuration = configuration;
+        File dbFile = new File(configuration.getDir() + "/" + configuration.getDbFileName());
         if (dbFile.exists()) {
             System.out.println(dbFile.getAbsolutePath() + " file exists");
             try {

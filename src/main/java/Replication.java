@@ -1,5 +1,3 @@
-package com.redis;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -58,7 +56,7 @@ public class Replication {
             String psync = "*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n";
             sendMessage(socket, psync);
             handle("psync", parseCommand(socket));
-            new Thread(new RedisHandler(socket, this)).start();
+            new Thread(new RedisHandler(socket, configuration, this)).start();
 
         }
     }
